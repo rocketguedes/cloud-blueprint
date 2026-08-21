@@ -1,0 +1,21 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - deployment.yaml
+  - httproute.yaml
+  - secret.yaml
+  - service.yaml
+  - serviceaccount.yaml
+namespace: authelia
+configMapGenerator:
+  - files:
+      - configuration.yaml
+    name: authelia-config
+images:
+  - digest: sha256:1b363e9279e742397966333f364e0876ae02bf5c876de73e83af6d48c57ff51b
+    name: ghcr.io/authelia/authelia
+    newTag: 4.39.20
+labels:
+  - pairs:
+      app.kubernetes.io/part-of: authelia
+      app.kubernetes.io/version: 4.39.20

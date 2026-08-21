@@ -1,0 +1,94 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: valkey
+  labels:
+    app.kubernetes.io/name: valkey
+    app.kubernetes.io/instance: valkey
+    app.kubernetes.io/component: valkey
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: valkey
+      app.kubernetes.io/instance: valkey
+      app.kubernetes.io/component: valkey
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: valkey
+        app.kubernetes.io/instance: valkey
+        app.kubernetes.io/component: valkey
+    spec:
+      automountServiceAccountToken: false
+      containers:
+        - args:
+            - --maxmemory
+            - 50mb
+            - --maxmemory-policy
+            - allkeys-lru
+          env:
+            - name: VALKEY_LOG_LEVEL
+              value: notice
+          image: docker.io/valkey/valkey:9.1.1-alpine3.24@sha256:ee91f7a174ac4d6a6b0685b3a60e321f0a9dbbb691f9b0e285be2ba1d1be8328
+          livenessProbe:
+            exec:
+              command:
+                - valkey-cli
+                - ping
+            failureThreshold: 3
+            periodSeconds: 30
+            timeoutSeconds: 10
+          name: server
+          ports:
+            - containerPort: 6379
+              name: valkey
+              protocol: TCP
+          readinessProbe:
+            exec:
+              command:
+                - valkey-cli
+                - ping
+            failureThreshold: 3
+            periodSeconds: 15
+            timeoutSeconds: 10
+          resources:
+            limits:
+              cpu: 100m
+              memory: 128Mi
+            requests:
+              cpu: 10m
+              memory: 32Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+          startupProbe:
+            exec:
+              command:
+                - valkey-cli
+                - ping
+            failureThreshold: 15
+            initialDelaySeconds: 2
+            periodSeconds: 5
+            timeoutSeconds: 10
+          volumeMounts:
+            - mountPath: /data
+              name: persistent
+      enableServiceLinks: false
+      securityContext:
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        runAsGroup: 1000
+        runAsNonRoot: true
+        runAsUser: 999
+        seccompProfile:
+          type: RuntimeDefault
+      serviceAccountName: valkey
+      volumes:
+        - name: persistent
+          persistentVolumeClaim:
+            claimName: valkey
