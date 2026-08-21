@@ -1,0 +1,17 @@
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: cilium-gateway-system
+  namespace: flux-system
+spec:
+  dependsOn:
+    - name: certificate-issuer
+  interval: 5m0s
+  path: ./infrastructure/configs/gateway-api
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  timeout: 2m0s
+  wait: true
