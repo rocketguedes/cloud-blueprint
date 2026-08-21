@@ -1,0 +1,20 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - clusterrole.yaml
+  - clusterrolebinding.yaml
+  - configmap.yaml
+  - namespace.yaml
+  - service-prometheus.yaml
+  - service-victoria-metrics.yaml
+  - serviceaccount.yaml
+  - statefulset.yaml
+namespace: monitoring
+images:
+  - digest: sha256:54467c7764a3e6579199af1914bb779f01ce32265cd552eb5ae0d4f8a2b80a97
+    name: docker.io/victoriametrics/victoria-metrics
+    newTag: v1.150.0
+labels:
+  - pairs:
+      app.kubernetes.io/part-of: monitoring
+      app.kubernetes.io/version: v1.150.0
