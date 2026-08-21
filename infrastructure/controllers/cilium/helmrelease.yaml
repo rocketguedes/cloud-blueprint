@@ -1,0 +1,45 @@
+apiVersion: helm.toolkit.fluxcd.io/v2
+kind: HelmRelease
+metadata:
+  name: cilium
+spec:
+  interval: 15m0s
+  timeout: 5m0s
+  chartRef:
+    kind: OCIRepository
+    name: cilium
+  install:
+    strategy:
+      name: RetryOnFailure
+      retryInterval: 5m0s
+  upgrade:
+    crds: CreateReplace
+    strategy:
+      name: RetryOnFailure
+      retryInterval: 5m0s
+  values:
+    bpf:
+      masquerade: true
+    envoy:
+      securityContext:
+        capabilities:
+          keepCapNetBindService: true
+    gatewayAPI:
+      enabled: true
+      hostNetwork:
+        enabled: true
+    hubble:
+      ui:
+        enabled: true
+      relay:
+        enabled: true
+    ipam:
+      mode: kubernetes
+    ipv6:
+      enabled: true
+    ipv6NativeRoutingCIDR: fd42::/56
+    k8sServiceHost: 10.0.0.26
+    k8sServicePort: 6443
+    kubeProxyReplacement: true
+    operator:
+      replicas: 1
