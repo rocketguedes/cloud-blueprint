@@ -1,0 +1,11 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - database.yaml
+  - databaserole.yaml
+  - secret.yaml
+namespace: postgresql
+labels:
+  - pairs:
+      app.kubernetes.io/part-of: lldap
+      app.kubernetes.io/version: 18.4-standard-trixie

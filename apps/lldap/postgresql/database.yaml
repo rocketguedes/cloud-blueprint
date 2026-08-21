@@ -1,0 +1,14 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: lldap
+  labels:
+    app.kubernetes.io/name: postgresql
+    app.kubernetes.io/instance: postgresql
+    app.kubernetes.io/component: database
+spec:
+  databaseReclaimPolicy: retain
+  name: lldap
+  owner: lldap
+  cluster:
+    name: postgresql

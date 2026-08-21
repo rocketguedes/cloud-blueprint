@@ -1,0 +1,96 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: lldap
+  labels:
+    app.kubernetes.io/name: lldap
+    app.kubernetes.io/instance: lldap
+    app.kubernetes.io/component: lldap
+spec:
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: lldap
+      app.kubernetes.io/instance: lldap
+      app.kubernetes.io/component: lldap
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: lldap
+        app.kubernetes.io/instance: lldap
+        app.kubernetes.io/component: lldap
+    spec:
+      automountServiceAccountToken: false
+      containers:
+        - name: lldap
+          image: docker.io/lldap/lldap
+          envFrom:
+            - configMapRef:
+                name: lldap
+            - secretRef:
+                name: lldap
+          livenessProbe:
+            exec:
+              command:
+                - /app/lldap
+                - healthcheck
+            failureThreshold: 3
+            periodSeconds: 30
+            timeoutSeconds: 10
+          ports:
+            - containerPort: 3890
+              name: ldap
+            - containerPort: 6360
+              name: ldaps
+            - containerPort: 17170
+              name: web
+          readinessProbe:
+            exec:
+              command:
+                - /app/lldap
+                - healthcheck
+            failureThreshold: 3
+            periodSeconds: 15
+            timeoutSeconds: 10
+          resources:
+            limits:
+              cpu: 100m
+              memory: 64Mi
+            requests:
+              cpu: 10m
+              memory: 16Mi
+          securityContext:
+            allowPrivilegeEscalation: false
+            capabilities:
+              drop:
+                - ALL
+            readOnlyRootFilesystem: true
+          startupProbe:
+            exec:
+              command:
+                - /app/lldap
+                - healthcheck
+            failureThreshold: 20
+            initialDelaySeconds: 3
+            periodSeconds: 5
+            timeoutSeconds: 10
+          volumeMounts:
+            - mountPath: /data
+              name: lldap-data
+            - mountPath: /tmp
+              name: tmp
+      enableServiceLinks: false
+      securityContext:
+        fsGroup: 1001
+        fsGroupChangePolicy: OnRootMismatch
+        runAsGroup: 1001
+        runAsNonRoot: true
+        runAsUser: 1001
+        seccompProfile:
+          type: RuntimeDefault
+      serviceAccountName: lldap
+      volumes:
+        - name: lldap-data
+          persistentVolumeClaim:
+            claimName: lldap
+        - emptyDir: {}
+          name: tmp

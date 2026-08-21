@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: lldap
+  labels:
+    app.kubernetes.io/name: lldap
+    app.kubernetes.io/instance: lldap
+    app.kubernetes.io/component: lldap
+data:
+  LLDAP_HTTP_HOST: "::"
+  LLDAP_HTTP_URL: https://lldap.guedescloud.com.br
+  LLDAP_KEY_FILE: ""
+  LLDAP_LDAP_BASE_DN: dc=guedescloud,dc=com,dc=br
+  LLDAP_LDAP_HOST: "::"
+  TZ: America/Bahia
