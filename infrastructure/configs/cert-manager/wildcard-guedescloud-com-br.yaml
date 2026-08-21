@@ -1,0 +1,19 @@
+apiVersion: cert-manager.io/v1
+kind: Certificate
+metadata:
+  name: wildcard-guedescloud-com-br
+  namespace: kube-system
+spec:
+  secretName: wildcard-guedescloud-com-br-tls
+  privateKey:
+    algorithm: ECDSA
+    rotationPolicy: Always
+    size: 256
+  duration: 2160h
+  renewBefore: 720h
+  dnsNames:
+    - guedescloud.com.br
+    - "*.guedescloud.com.br"
+  issuerRef:
+    name: letsencrypt
+    kind: ClusterIssuer
