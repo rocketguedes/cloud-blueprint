@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: grafana
+  labels:
+    app.kubernetes.io/name: grafana
+    app.kubernetes.io/instance: grafana
+    app.kubernetes.io/component: grafana
+spec:
+  ipFamilyPolicy: PreferDualStack
+  selector:
+    app.kubernetes.io/name: grafana
+    app.kubernetes.io/instance: grafana
+    app.kubernetes.io/component: grafana
+  ports:
+    - name: http
+      protocol: TCP
+      port: 3000
+      targetPort: http-grafana

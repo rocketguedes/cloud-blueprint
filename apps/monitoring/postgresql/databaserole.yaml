@@ -1,0 +1,16 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: DatabaseRole
+metadata:
+  name: grafana
+  labels:
+    app.kubernetes.io/name: postgresql
+    app.kubernetes.io/instance: postgresql
+    app.kubernetes.io/component: database
+spec:
+  databaseRoleReclaimPolicy: retain
+  login: true
+  name: grafana
+  passwordSecret:
+    name: grafana
+  cluster:
+    name: postgresql
