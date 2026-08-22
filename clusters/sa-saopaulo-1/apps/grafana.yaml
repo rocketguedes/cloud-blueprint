@@ -11,6 +11,7 @@ spec:
       name: sops-age
   dependsOn:
     - name: authelia
+    - name: cilium-gateway-system
     - name: grafana-postgresql
     - name: victoria-metrics
   interval: 5m0s
