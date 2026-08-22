@@ -1,0 +1,15 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: immich
+resources:
+  - deployment.yaml
+  - service.yaml
+  - serviceaccount.yaml
+images:
+  - digest: sha256:57c1c742785d89d75c1094a224309d4f0f6161f911cf6d0b58149876f0004e06
+    name: ghcr.io/immich-app/immich-machine-learning
+    newTag: v3.1.0-armnn
+labels:
+- pairs:
+    app.kubernetes.io/part-of: immich
+    app.kubernetes.io/version: v3.1.0

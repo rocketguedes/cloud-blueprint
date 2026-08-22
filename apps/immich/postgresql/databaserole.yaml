@@ -1,0 +1,16 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: DatabaseRole
+metadata:
+  name: immich-database
+  labels:
+    app.kubernetes.io/name: postgresql
+    app.kubernetes.io/instance: postgresql
+    app.kubernetes.io/component: database
+spec:
+  cluster:
+    name: postgresql
+  name: immich
+  login: true
+  passwordSecret:
+    name: immich-database
+  databaseRoleReclaimPolicy: delete

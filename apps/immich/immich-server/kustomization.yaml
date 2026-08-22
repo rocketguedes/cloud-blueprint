@@ -1,0 +1,26 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: immich
+resources:
+  - configmap.yaml
+  - deployment.yaml
+  - httproute.yaml
+  - namespace.yaml
+  - persistentvolumeclaim.yaml
+  - secret.yaml
+  - service.yaml
+  - serviceaccount.yaml
+configMapGenerator:
+  - files:
+      - immich-config.json
+    name: immich-config
+generatorOptions:
+  disableNameSuffixHash: true
+images:
+  - digest: sha256:b434cb9287eea1471c9974845914d4dd328c9c2d652e446ed4930f99944f0ceb
+    name: ghcr.io/immich-app/immich-server
+    newTag: v3.1.0
+labels:
+  - pairs:
+      app.kubernetes.io/part-of: immich
+      app.kubernetes.io/version: v3.1.0
