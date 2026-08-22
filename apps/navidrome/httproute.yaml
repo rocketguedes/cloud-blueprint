@@ -1,0 +1,49 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: navidrome
+  labels:
+    app.kubernetes.io/name: navidrome
+    app.kubernetes.io/instance: navidrome
+spec:
+  parentRefs:
+    - name: cilium-gateway-system
+      namespace: kube-system
+      port: 443
+  hostnames:
+    - music.guedescloud.com.br
+  rules:
+    - backendRefs:
+        - name: navidrome
+          port: 4533
+      matches:
+        - path:
+            type: Exact
+            value: /ping
+        - path:
+            type: PathPrefix
+            value: /api
+        - path:
+            type: PathPrefix
+            value: /app
+        - path:
+            type: PathPrefix
+            value: /auth
+        - path:
+            type: PathPrefix
+            value: /backgrounds
+        - path:
+            type: PathPrefix
+            value: /debug
+        - path:
+            type: PathPrefix
+            value: /jellyfin
+        - path:
+            type: PathPrefix
+            value: /metrics
+        - path:
+            type: PathPrefix
+            value: /rest
+        - path:
+            type: PathPrefix
+            value: /share

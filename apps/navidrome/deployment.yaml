@@ -1,0 +1,174 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: navidrome
+  labels:
+    app.kubernetes.io/name: navidrome
+    app.kubernetes.io/instance: navidrome
+spec:
+  replicas: 1
+  revisionHistoryLimit: 0
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: navidrome
+      app.kubernetes.io/instance: navidrome
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: navidrome
+        app.kubernetes.io/instance: navidrome
+      annotations:
+        prometheus.io/path: /metrics
+        prometheus.io/port: "4533"
+        prometheus.io/scrape: "true"
+    spec:
+      serviceAccountName: navidrome
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1001
+        fsGroupChangePolicy: OnRootMismatch
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      initContainers:
+        - name: navidrome-plugins-init
+          image: docker.io/deluan/navidrome
+          imagePullPolicy: Always
+          command:
+            - /bin/sh
+          args:
+            - -c
+            - |
+              set -eu
+              mkdir -p /data/plugins
+
+              fetch_plugin() {
+                name=$1 version=$2 checksum=$3 url=$4
+                target="/data/plugins/${name}.ndp"
+                version_file="${target}.version"
+                tmp="${target}.tmp.ndp"
+
+                [ -f "$target" ] && [ "$(cat "$version_file" 2>/dev/null)" = "$version" ] && return 0
+
+                trap 'rm -f "$tmp"' EXIT
+                wget -qO "$tmp" "$url"
+                echo "${checksum}  ${tmp}" | sha256sum -c -s
+                navidrome plugin validate "$tmp"
+                mv "$tmp" "$target"
+                echo "$version" > "$version_file"
+                trap - EXIT
+              }
+
+              fetch_plugin "apple-music" "$PLUGINS_APPLE_MUSIC_VERSION" "$PLUGINS_APPLE_MUSIC_SHA256" \
+                "https://github.com/navidrome/apple-music-plugin/releases/download/${PLUGINS_APPLE_MUSIC_VERSION}/apple-music.ndp"
+
+              fetch_plugin "audiomuseai" "$PLUGINS_AUDIOMUSEAI_VERSION" "$PLUGINS_AUDIOMUSEAI_SHA256" \
+                "https://github.com/NeptuneHub/AudioMuse-AI-NV-plugin/releases/download/${PLUGINS_AUDIOMUSEAI_VERSION}/audiomuseai.ndp"
+          env:
+            - name: PLUGINS_APPLE_MUSIC_VERSION
+              value: v0.2.0
+            - name: PLUGINS_APPLE_MUSIC_SHA256
+              value: 3682751e72caa5cc46b3f7ab70de70ea026f0a38a47f780b2d2b4922ed0ad154
+            - name: PLUGINS_AUDIOMUSEAI_VERSION
+              value: v9
+            - name: PLUGINS_AUDIOMUSEAI_SHA256
+              value: bca0b84ab29359f364a645fba968c4574b9bc81ef58c6f33d03957ae33b50cfc
+          volumeMounts:
+            - name: navidrome
+              mountPath: /data
+          resources:
+            requests:
+              cpu: 10m
+              memory: 16Mi
+            limits:
+              cpu: 100m
+              memory: 32Mi
+          securityContext:
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+      containers:
+        - name: navidrome
+          image: docker.io/deluan/navidrome
+          envFrom:
+            - configMapRef:
+                name: navidrome
+            - secretRef:
+                name: navidrome
+          ports:
+            - name: http
+              containerPort: 4533
+              protocol: TCP
+          volumeMounts:
+            - name: apple
+              mountPath: /music
+              readOnly: true
+            - name: navidrome
+              mountPath: /data
+            - name: navidrome-toml
+              mountPath: /data/navidrome.toml
+              subPath: navidrome.toml
+              readOnly: true
+            - name: backup
+              mountPath: /backup
+            - name: tmp
+              mountPath: /tmp
+          resources:
+            requests:
+              cpu: 150m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 896Mi
+          securityContext:
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          startupProbe:
+            httpGet:
+              path: /ping
+              port: http
+            initialDelaySeconds: 3
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 30
+          livenessProbe:
+            httpGet:
+              path: /ping
+              port: http
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /ping
+              port: http
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+      volumes:
+        - name: apple
+          persistentVolumeClaim:
+            claimName: apple
+        - name: navidrome
+          persistentVolumeClaim:
+            claimName: navidrome
+        - name: navidrome-toml
+          configMap:
+            name: navidrome-toml
+        - name: backup
+          persistentVolumeClaim:
+            claimName: backup
+        - name: tmp
+          emptyDir: {}

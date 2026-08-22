@@ -1,0 +1,15 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: navidrome-toml
+  labels:
+    app.kubernetes.io/name: navidrome
+    app.kubernetes.io/instance: navidrome
+data:
+  navidrome.toml: |
+    PID.Album = 'plid|albumartistid,album,albumversion,releasedate'
+    PID.Track = 'cnid|albumid,discnumber,tracknumber,title'
+    Tags.cnid.Aliases = ['cnid']
+    Tags.Composer.Split = []
+    Tags.plid.Album = true
+    Tags.plid.Aliases = ['plid']
