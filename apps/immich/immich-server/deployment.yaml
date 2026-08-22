@@ -37,7 +37,7 @@ spec:
           image: ghcr.io/immich-app/immich-server
           envFrom:
             - configMapRef:
-                name: immich
+                name: immich-server
             - secretRef:
                 name: immich
           ports:
