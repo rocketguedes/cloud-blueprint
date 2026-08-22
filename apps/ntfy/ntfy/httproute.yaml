@@ -1,0 +1,23 @@
+apiVersion: gateway.networking.k8s.io/v1
+kind: HTTPRoute
+metadata:
+  name: ntfy
+  labels:
+    app.kubernetes.io/name: ntfy
+    app.kubernetes.io/instance: ntfy
+    app.kubernetes.io/component: ntfy
+spec:
+  parentRefs:
+    - name: cilium-gateway-system
+      namespace: kube-system
+      port: 443
+  hostnames:
+    - notify.guedescloud.com.br
+  rules:
+    - backendRefs:
+        - name: ntfy-svc
+          port: 8093
+      matches:
+        - path:
+            type: PathPrefix
+            value: /

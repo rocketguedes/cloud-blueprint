@@ -1,0 +1,99 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: ntfy
+  labels:
+    app.kubernetes.io/name: ntfy
+    app.kubernetes.io/instance: ntfy
+    app.kubernetes.io/component: ntfy-pod
+spec:
+  replicas: 1
+  revisionHistoryLimit: 0
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: ntfy
+      app.kubernetes.io/instance: ntfy
+      app.kubernetes.io/component: ntfy-pod
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: ntfy
+        app.kubernetes.io/instance: ntfy
+        app.kubernetes.io/component: ntfy-pod
+      annotations:
+        prometheus.io/path: /metrics
+        prometheus.io/port: "8093"
+        prometheus.io/scrape: "true"
+    spec:
+      serviceAccountName: ntfy
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: ntfy
+          image: docker.io/binwiederhier/ntfy
+          command:
+            - serve
+          envFrom:
+            - configMapRef:
+                name: ntfy
+            - secretRef:
+                name: ntfy
+          ports:
+            - name: http-ntfy
+              containerPort: 8093
+              protocol: TCP
+          volumeMounts:
+            - name: cache-volume
+              mountPath: /var/cache/ntfy
+            - name: tmp
+              mountPath: /tmp
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              cpu: 100m
+              memory: 128Mi
+          securityContext:
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          startupProbe:
+            httpGet:
+              path: /v1/health
+              port: http-ntfy
+            initialDelaySeconds: 2
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 30
+          livenessProbe:
+            httpGet:
+              path: /v1/health
+              port: http-ntfy
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /v1/health
+              port: http-ntfy
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+      volumes:
+        - name: cache-volume
+          persistentVolumeClaim:
+            claimName: ntfy-pvc
+        - name: tmp
+          emptyDir: {}

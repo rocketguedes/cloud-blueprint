@@ -1,0 +1,14 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: ntfy
+  labels:
+    app.kubernetes.io/name: postgresql
+    app.kubernetes.io/instance: postgresql
+    app.kubernetes.io/component: database
+spec:
+  cluster:
+    name: postgresql
+  name: ntfy
+  owner: ntfy
+  databaseReclaimPolicy: delete
