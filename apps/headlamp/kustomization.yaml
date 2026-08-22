@@ -1,0 +1,20 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: headlamp
+resources:
+  - clusterrolebinding.yaml
+  - configmap.yaml
+  - deployment.yaml
+  - httproute.yaml
+  - namespace.yaml
+  - secret.yaml
+  - service.yaml
+  - serviceaccount.yaml
+images:
+  - digest: sha256:b491653c1a0d380b70b67a4024f1204591f9c84a68ee567778d53d28b1856168
+    name: ghcr.io/headlamp-k8s/headlamp
+    newTag: v0.44.0
+labels:
+  - pairs:
+      app.kubernetes.io/part-of: headlamp
+      app.kubernetes.io/version: v0.44.0
