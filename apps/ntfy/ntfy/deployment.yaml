@@ -39,7 +39,7 @@ spec:
       containers:
         - name: ntfy
           image: docker.io/binwiederhier/ntfy
-          command:
+          args:
             - serve
           envFrom:
             - configMapRef:
