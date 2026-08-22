@@ -12,10 +12,65 @@ spec:
         namespaces:
           from: All
 
-    - name: https
+    - name: passthrough
+      protocol: TLS
+      port: 443
+      hostname: connect.guedescloud.com.br
+      allowedRoutes:
+        namespaces:
+          from: Selector
+          selector:
+            matchLabels:
+              kubernetes.io/metadata.name: headscale
+      tls:
+        mode: Passthrough
+
+    - name: https-accounts
       protocol: HTTPS
       port: 443
-      hostname: "*.guedescloud.com.br"
+      hostname: accounts.guedescloud.com.br
+      allowedRoutes:
+        namespaces:
+          from: All
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - kind: Secret
+            name: wildcard-guedescloud-com-br-tls
+            namespace: kube-system
+
+    - name: https-console
+      protocol: HTTPS
+      port: 443
+      hostname: console.guedescloud.com.br
+      allowedRoutes:
+        namespaces:
+          from: All
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - kind: Secret
+            name: wildcard-guedescloud-com-br-tls
+            namespace: kube-system
+
+    - name: https-monitoring
+      protocol: HTTPS
+      port: 443
+      hostname: monitoring.guedescloud.com.br
+      allowedRoutes:
+        namespaces:
+          from: All
+      tls:
+        mode: Terminate
+        certificateRefs:
+          - kind: Secret
+            name: wildcard-guedescloud-com-br-tls
+            namespace: kube-system
+
+    - name: https-wallet
+      protocol: HTTPS
+      port: 443
+      hostname: wallet.guedescloud.com.br
       allowedRoutes:
         namespaces:
           from: All

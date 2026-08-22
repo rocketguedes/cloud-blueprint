@@ -1,0 +1,122 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: headscale
+  labels:
+    app.kubernetes.io/name: headscale
+    app.kubernetes.io/instance: headscale
+spec:
+  replicas: 1
+  revisionHistoryLimit: 0
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: headscale
+      app.kubernetes.io/instance: headscale
+  strategy:
+    type: Recreate
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: headscale
+        app.kubernetes.io/instance: headscale
+      annotations:
+        prometheus.io/path: /metrics
+        prometheus.io/port: "9090"
+        prometheus.io/scrape: "true"
+    spec:
+      serviceAccountName: headscale
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      securityContext:
+        runAsUser: 65532
+        runAsGroup: 65532
+        fsGroup: 65532
+        fsGroupChangePolicy: OnRootMismatch
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: headscale
+          image: docker.io/headscale/headscale
+          args:
+            - serve
+          envFrom:
+            - secretRef:
+                name: headscale
+          ports:
+            - name: http-control
+              containerPort: 8080
+              protocol: TCP
+            - name: http-metrics
+              containerPort: 9090
+              protocol: TCP
+            - name: stun
+              hostPort: 3478
+              containerPort: 3478
+              protocol: UDP
+          volumeMounts:
+            - name: config
+              mountPath: /etc/headscale
+              readOnly: true
+            - name: data
+              mountPath: /var/lib/headscale
+            - name: socket
+              mountPath: /var/run/headscale
+            - name: tmp
+              mountPath: /tmp
+            - name: headscale-certs
+              mountPath: /etc/headscale/tls
+              readOnly: true
+          resources:
+            requests:
+              cpu: 50m
+              memory: 128Mi
+            limits:
+              cpu: 500m
+              memory: 512Mi
+          securityContext:
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          startupProbe:
+            httpGet:
+              path: /health
+              port: http-control
+              scheme: HTTPS
+            initialDelaySeconds: 3
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 30
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: http-control
+              scheme: HTTPS
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http-control
+              scheme: HTTPS
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+      volumes:
+        - name: config
+          configMap:
+            name: headscale-config
+        - name: data
+          persistentVolumeClaim:
+            claimName: headscale
+        - name: socket
+          emptyDir: {}
+        - name: tmp
+          emptyDir: {}
+        - name: headscale-certs
+          secret:
+            secretName: headscale-certs
