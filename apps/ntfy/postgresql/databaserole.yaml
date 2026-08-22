@@ -1,7 +1,7 @@
 apiVersion: postgresql.cnpg.io/v1
 kind: DatabaseRole
 metadata:
-  name: ntfy-db-auth
+  name: ntfy
   labels:
     app.kubernetes.io/name: postgresql
     app.kubernetes.io/instance: postgresql
@@ -12,5 +12,5 @@ spec:
   name: ntfy
   login: true
   passwordSecret:
-    name: ntfy-db-auth
+    name: ntfy
   databaseRoleReclaimPolicy: delete
