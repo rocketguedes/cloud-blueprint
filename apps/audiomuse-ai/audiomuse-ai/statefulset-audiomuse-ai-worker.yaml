@@ -1,0 +1,84 @@
+apiVersion: apps/v1
+kind: StatefulSet
+metadata:
+  name: audiomuse-ai-worker
+  labels:
+    app.kubernetes.io/name: audiomuse-ai
+    app.kubernetes.io/instance: audiomuse-ai
+    app.kubernetes.io/component: worker
+spec:
+  revisionHistoryLimit: 0
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: audiomuse-ai
+      app.kubernetes.io/instance: audiomuse-ai
+      app.kubernetes.io/component: worker
+  serviceName: audiomuse-ai-worker
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: audiomuse-ai
+        app.kubernetes.io/instance: audiomuse-ai
+        app.kubernetes.io/component: worker
+    spec:
+      serviceAccountName: audiomuse-ai
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
+        fsGroup: 1000
+        fsGroupChangePolicy: OnRootMismatch
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      terminationGracePeriodSeconds: 60
+      containers:
+        - name: rq-worker
+          image: ghcr.io/neptunehub/audiomuse-ai
+          envFrom:
+            - configMapRef:
+                name: audiomuse-ai-config
+            - secretRef:
+                name: audiomuse-ai
+          env:
+            - name: SERVICE_TYPE
+              value: worker
+          volumeMounts:
+            - name: app-temp-audio
+              mountPath: /app/temp_audio
+            - name: plugins-storage
+              mountPath: /app/plugin/installed
+            - name: tmp
+              mountPath: /tmp
+          resources:
+            requests:
+              cpu: 50m
+              memory: 640Mi
+            limits:
+              cpu: 1500m
+              memory: 4Gi
+          securityContext:
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+      volumes:
+        - name: app-temp-audio
+          emptyDir: {}
+        - name: tmp
+          emptyDir: {}
+  volumeClaimTemplates:
+    - metadata:
+        name: plugins-storage
+        labels:
+          app.kubernetes.io/name: audiomuse-ai
+          app.kubernetes.io/instance: audiomuse-ai
+          app.kubernetes.io/component: worker
+      spec:
+        accessModes:
+          - ReadWriteOnce
+        resources:
+          requests:
+            storage: 2Gi

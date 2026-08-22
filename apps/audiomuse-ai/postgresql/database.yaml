@@ -1,0 +1,14 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: Database
+metadata:
+  name: audiomuse-ai
+  labels:
+    app.kubernetes.io/name: postgresql
+    app.kubernetes.io/instance: postgresql
+    app.kubernetes.io/component: database
+spec:
+  cluster:
+    name: postgresql
+  name: audiomusedb
+  owner: audiomuse
+  databaseReclaimPolicy: delete

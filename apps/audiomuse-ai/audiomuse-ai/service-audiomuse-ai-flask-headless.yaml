@@ -1,0 +1,20 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: audiomuse-ai-flask-headless
+  labels:
+    app.kubernetes.io/name: audiomuse-ai
+    app.kubernetes.io/instance: audiomuse-ai
+    app.kubernetes.io/component: flask
+spec:
+  clusterIP: None
+  selector:
+    app.kubernetes.io/name: audiomuse-ai
+    app.kubernetes.io/instance: audiomuse-ai
+    app.kubernetes.io/component: flask
+  ports:
+    - name: http
+      appProtocol: http
+      protocol: TCP
+      port: 8000
+      targetPort: http

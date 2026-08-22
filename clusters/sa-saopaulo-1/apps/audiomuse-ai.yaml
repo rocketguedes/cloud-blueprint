@@ -1,0 +1,23 @@
+---
+apiVersion: kustomize.toolkit.fluxcd.io/v1
+kind: Kustomization
+metadata:
+  name: audiomuse-ai
+  namespace: flux-system
+spec:
+  decryption:
+    provider: sops
+    secretRef:
+      name: sops-age
+  dependsOn:
+    - name: audiomuse-ai-postgresql
+    - name: cilium-gateway-system
+    - name: keda
+  interval: 5m0s
+  path: ./apps/audiomuse-ai/audiomuse-ai
+  prune: true
+  sourceRef:
+    kind: GitRepository
+    name: flux-system
+  timeout: 2m0s
+  wait: true

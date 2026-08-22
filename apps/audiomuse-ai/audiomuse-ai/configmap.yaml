@@ -1,0 +1,24 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: audiomuse-ai-config
+  labels:
+    app.kubernetes.io/name: audiomuse-ai
+    app.kubernetes.io/instance: audiomuse-ai
+data:
+  AI_CHAT_DB_USER_NAME: ""
+  AI_MODEL_PROVIDER: OLLAMA
+  BACKUP_DIR: /tmp/backup
+  ENABLE_PROXY_FIX: "true"
+  IVF_DISK_CACHE_DIR: /tmp/ivf_cache
+  LYRICS_ASR_ENABLE: "false"
+  MEDIASERVER_TYPE: navidrome
+  NAVIDROME_URL: http://navidrome.navidrome:4533
+  NAVIDROME_USER: leandro
+  OLLAMA_MODEL_NAME: qwen2.5:1.5b
+  OLLAMA_SERVER_URL: http://ollama.ollama:11434/api/generate
+  POSTGRES_DB: audiomusedb
+  POSTGRES_HOST: postgresql-rw.postgresql.svc.cluster.local
+  POSTGRES_PORT: "5432"
+  POSTGRES_USER: audiomuse
+  TZ: America/Bahia

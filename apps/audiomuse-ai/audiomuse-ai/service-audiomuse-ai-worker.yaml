@@ -1,0 +1,18 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: audiomuse-ai-worker
+  labels:
+    app.kubernetes.io/name: audiomuse-ai
+    app.kubernetes.io/instance: audiomuse-ai
+    app.kubernetes.io/component: worker
+spec:
+  clusterIP: None
+  selector:
+    app.kubernetes.io/name: audiomuse-ai
+    app.kubernetes.io/instance: audiomuse-ai
+    app.kubernetes.io/component: worker
+  ports:
+    - name: none
+      protocol: TCP
+      port: 9999

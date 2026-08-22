@@ -1,0 +1,37 @@
+apiVersion: keda.sh/v1alpha1
+kind: ScaledObject
+metadata:
+  name: audiomuse-ai-worker
+  labels:
+    app.kubernetes.io/name: audiomuse-ai
+    app.kubernetes.io/instance: audiomuse-ai
+    app.kubernetes.io/component: worker
+spec:
+  scaleTargetRef:
+    kind: StatefulSet
+    name: audiomuse-ai-worker
+  minReplicaCount: 1
+  maxReplicaCount: 2
+  triggers:
+    - type: postgresql
+      metadata:
+        dbName: audiomusedb
+        host: postgresql-rw.postgresql.svc.cluster.local
+        port: "5432"
+        query: SELECT COUNT(*) FROM task_status WHERE status = 'NEW' AND queue_name = 'default';
+        sslmode: disable
+        targetQueryValue: "5"
+        userName: audiomuse
+      authenticationRef:
+        name: audiomuse-ai-postgres-auth
+    - type: postgresql
+      metadata:
+        dbName: audiomusedb
+        host: postgresql-rw.postgresql.svc.cluster.local
+        port: "5432"
+        query: SELECT COUNT(*) FROM task_status WHERE status = 'NEW' AND queue_name = 'high';
+        sslmode: disable
+        targetQueryValue: "2"
+        userName: audiomuse
+      authenticationRef:
+        name: audiomuse-ai-postgres-auth
