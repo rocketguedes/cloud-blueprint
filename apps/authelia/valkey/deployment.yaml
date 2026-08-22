@@ -31,7 +31,7 @@ spec:
           env:
             - name: VALKEY_LOG_LEVEL
               value: notice
-          image: docker.io/valkey/valkey:9.1.1-alpine3.24@sha256:ee91f7a174ac4d6a6b0685b3a60e321f0a9dbbb691f9b0e285be2ba1d1be8328
+          image: docker.io/valkey/valkey
           livenessProbe:
             exec:
               command:
