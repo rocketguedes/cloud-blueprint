@@ -1,0 +1,18 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+namespace: feishin
+resources:
+  - configmap.yaml
+  - deployment.yaml
+  - httproute.yaml
+  - namespace.yaml
+  - service.yaml
+  - serviceaccount.yaml
+images:
+  - digest: sha256:5c0b3a1f307f8d9508c9fd5dcef04349b6cda1740ae95d478498dc86e3e432bf
+    name: ghcr.io/jeffvli/feishin
+    newTag: 1.15.1
+labels:
+  - pairs:
+      app.kubernetes.io/part-of: feishin
+      app.kubernetes.io/version: 1.15.1

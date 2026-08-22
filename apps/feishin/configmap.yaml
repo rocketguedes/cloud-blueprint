@@ -1,0 +1,23 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: feishin
+  labels:
+    app.kubernetes.io/name: feishin
+    app.kubernetes.io/instance: feishin
+data:
+  ANALYTICS_DISABLED: "true"
+  FS_GENERAL_EXTERNAL_LINKS: "false"
+  FS_LYRICS_FETCH: "false"
+  FS_LYRICS_SHOW_MATCH: "false"
+  FS_LYRICS_SHOW_PROVIDER: "false"
+  FS_PLAYBACK_MEDIA_SESSION: "true"
+  FS_PLAYBACK_TRANSCODE_ENABLED: "true"
+  FS_PLAYBACK_TRANSCODE_FORMAT: opus
+  LEGACY_AUTHENTICATION: "false"
+  PUBLIC_PATH: /
+  SERVER_LOCK: "true"
+  SERVER_NAME: navidrome
+  SERVER_TYPE: navidrome
+  SERVER_URL: https://music.guedescloud.com.br
+  TZ: America/Bahia

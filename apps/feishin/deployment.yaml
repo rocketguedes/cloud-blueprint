@@ -1,0 +1,90 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: feishin
+  labels:
+    app.kubernetes.io/name: feishin
+    app.kubernetes.io/instance: feishin
+spec:
+  replicas: 1
+  revisionHistoryLimit: 0
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: feishin
+      app.kubernetes.io/instance: feishin
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: feishin
+        app.kubernetes.io/instance: feishin
+    spec:
+      serviceAccountName: feishin
+      automountServiceAccountToken: false
+      enableServiceLinks: false
+      securityContext:
+        runAsUser: 101
+        runAsGroup: 101
+        fsGroup: 101
+        fsGroupChangePolicy: OnRootMismatch
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
+      containers:
+        - name: feishin
+          image: ghcr.io/jeffvli/feishin
+          envFrom:
+            - configMapRef:
+                name: feishin
+          ports:
+            - name: http
+              containerPort: 9180
+              protocol: TCP
+          volumeMounts:
+            - name: cache
+              mountPath: /var/cache/nginx
+            - name: confd
+              mountPath: /etc/nginx/conf.d
+            - name: tmp
+              mountPath: /tmp
+          resources:
+            requests:
+              cpu: 10m
+              memory: 32Mi
+            limits:
+              cpu: 100m
+              memory: 64Mi
+          securityContext:
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          startupProbe:
+            httpGet:
+              path: /feishin/
+              port: http
+            initialDelaySeconds: 2
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 20
+          livenessProbe:
+            tcpSocket:
+              port: http
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /feishin/
+              port: http
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
+      volumes:
+        - name: cache
+          emptyDir: {}
+        - name: confd
+          emptyDir: {}
+        - name: tmp
+          emptyDir: {}
