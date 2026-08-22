@@ -7,8 +7,8 @@ metadata:
     app.kubernetes.io/instance: postgresql
     app.kubernetes.io/component: database
 spec:
-  databaseReclaimPolicy: retain
-  name: lldap
-  owner: lldap
   cluster:
     name: postgresql
+  name: lldap
+  owner: lldap
+  databaseReclaimPolicy: retain

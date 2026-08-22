@@ -7,10 +7,10 @@ metadata:
     app.kubernetes.io/instance: postgresql
     app.kubernetes.io/component: database
 spec:
-  databaseRoleReclaimPolicy: retain
-  login: true
-  name: vaultwarden
-  passwordSecret:
-    name: vaultwarden
   cluster:
     name: postgresql
+  name: vaultwarden
+  login: true
+  passwordSecret:
+    name: vaultwarden
+  databaseRoleReclaimPolicy: retain

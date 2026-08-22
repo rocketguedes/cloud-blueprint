@@ -7,8 +7,8 @@ metadata:
     app.kubernetes.io/instance: postgresql
     app.kubernetes.io/component: database
 spec:
-  databaseReclaimPolicy: retain
-  name: grafana
-  owner: grafana
   cluster:
     name: postgresql
+  name: grafana
+  owner: grafana
+  databaseReclaimPolicy: retain

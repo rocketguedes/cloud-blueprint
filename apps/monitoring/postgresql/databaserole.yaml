@@ -7,10 +7,10 @@ metadata:
     app.kubernetes.io/instance: postgresql
     app.kubernetes.io/component: database
 spec:
-  databaseRoleReclaimPolicy: retain
-  login: true
-  name: grafana
-  passwordSecret:
-    name: grafana
   cluster:
     name: postgresql
+  name: grafana
+  login: true
+  passwordSecret:
+    name: grafana
+  databaseRoleReclaimPolicy: retain

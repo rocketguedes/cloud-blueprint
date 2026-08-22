@@ -7,8 +7,8 @@ metadata:
     app.kubernetes.io/instance: grafana
     app.kubernetes.io/component: grafana
 spec:
+  accessModes:
+    - ReadWriteOnce
   resources:
     requests:
       storage: 1Gi
-  accessModes:
-    - ReadWriteOnce

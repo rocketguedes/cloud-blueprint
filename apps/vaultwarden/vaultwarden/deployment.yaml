@@ -1,12 +1,14 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
+  name: vaultwarden
   labels:
     app.kubernetes.io/name: vaultwarden
     app.kubernetes.io/instance: vaultwarden
     app.kubernetes.io/component: vaultwarden
-  name: vaultwarden
 spec:
+  replicas: 1
+  revisionHistoryLimit: 0
   selector:
     matchLabels:
       app.kubernetes.io/name: vaultwarden
@@ -19,73 +21,74 @@ spec:
         app.kubernetes.io/instance: vaultwarden
         app.kubernetes.io/component: vaultwarden
     spec:
+      serviceAccountName: vaultwarden
       automountServiceAccountToken: false
-      containers:
-      - envFrom:
-        - configMapRef:
-            name: vaultwarden
-        - secretRef:
-            name: vaultwarden
-        image: docker.io/vaultwarden/server
-        livenessProbe:
-          failureThreshold: 3
-          httpGet:
-            path: /alive
-            port: http-alt
-          periodSeconds: 30
-          timeoutSeconds: 5
-        name: vaultwarden
-        ports:
-        - containerPort: 8080
-          name: http-alt
-          protocol: TCP
-        readinessProbe:
-          failureThreshold: 3
-          httpGet:
-            path: /alive
-            port: http-alt
-            scheme: HTTP
-          periodSeconds: 10
-          timeoutSeconds: 3
-        resources:
-          limits:
-            cpu: 100m
-            memory: 128Mi
-          requests:
-            cpu: 20m
-            memory: 64Mi
-        securityContext:
-          allowPrivilegeEscalation: false
-          capabilities:
-            drop:
-            - ALL
-          readOnlyRootFilesystem: true
-        startupProbe:
-          failureThreshold: 30
-          httpGet:
-            path: /alive
-            port: http-alt
-          initialDelaySeconds: 3
-          periodSeconds: 5
-          timeoutSeconds: 3
-        volumeMounts:
-        - mountPath: /data
-          name: vaultwarden
-        - mountPath: /tmp
-          name: tmp
       enableServiceLinks: false
       securityContext:
+        runAsUser: 1000
+        runAsGroup: 1000
         fsGroup: 1000
         fsGroupChangePolicy: OnRootMismatch
-        runAsGroup: 1000
         runAsNonRoot: true
-        runAsUser: 1000
         seccompProfile:
           type: RuntimeDefault
-      serviceAccountName: vaultwarden
+      containers:
+        - name: vaultwarden
+          image: docker.io/vaultwarden/server
+          envFrom:
+            - configMapRef:
+                name: vaultwarden
+            - secretRef:
+                name: vaultwarden
+          ports:
+            - name: http-alt
+              containerPort: 8080
+              protocol: TCP
+          volumeMounts:
+            - name: vaultwarden
+              mountPath: /data
+            - name: tmp
+              mountPath: /tmp
+          resources:
+            requests:
+              cpu: 20m
+              memory: 64Mi
+            limits:
+              cpu: 100m
+              memory: 128Mi
+          securityContext:
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          startupProbe:
+            httpGet:
+              path: /alive
+              port: http-alt
+            initialDelaySeconds: 3
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 30
+          livenessProbe:
+            httpGet:
+              path: /alive
+              port: http-alt
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /alive
+              port: http-alt
+              scheme: HTTP
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
       volumes:
-      - name: vaultwarden
-        persistentVolumeClaim:
-          claimName: vaultwarden
-      - emptyDir: {}
-        name: tmp
+        - name: vaultwarden
+          persistentVolumeClaim:
+            claimName: vaultwarden
+        - name: tmp
+          emptyDir: {}

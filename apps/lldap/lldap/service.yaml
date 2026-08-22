@@ -14,11 +14,15 @@ spec:
     app.kubernetes.io/component: lldap
   ports:
     - name: ldap
+      protocol: TCP
       port: 3890
       targetPort: ldap
     - name: ldaps
+      protocol: TCP
       port: 6360
       targetPort: ldaps
     - name: web
+      appProtocol: http
+      protocol: TCP
       port: 17170
       targetPort: web

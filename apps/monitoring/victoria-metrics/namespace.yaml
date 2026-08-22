@@ -3,5 +3,6 @@ kind: Namespace
 metadata:
   name: monitoring
   labels:
-    app.kubernetes.io/part-of: monitoring
+    app.kubernetes.io/name: victoria-metrics-single
+    app.kubernetes.io/instance: victoria-metrics-single
     pod-security.kubernetes.io/enforce: restricted

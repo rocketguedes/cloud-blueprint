@@ -7,10 +7,10 @@ metadata:
     app.kubernetes.io/instance: postgresql
     app.kubernetes.io/component: database
 spec:
-  databaseRoleReclaimPolicy: retain
-  login: true
-  name: authelia
-  passwordSecret:
-    name: authelia
   cluster:
     name: postgresql
+  name: authelia
+  login: true
+  passwordSecret:
+    name: authelia
+  databaseRoleReclaimPolicy: retain

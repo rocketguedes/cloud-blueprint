@@ -7,8 +7,8 @@ metadata:
     app.kubernetes.io/instance: vaultwarden
     app.kubernetes.io/component: vaultwarden
 spec:
+  accessModes:
+    - ReadWriteOnce
   resources:
     requests:
       storage: 15Gi
-  accessModes:
-    - ReadWriteOnce

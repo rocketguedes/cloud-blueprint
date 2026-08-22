@@ -1,5 +1,6 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
+namespace: monitoring
 resources:
   - clusterrole.yaml
   - clusterrolebinding.yaml
@@ -9,7 +10,6 @@ resources:
   - service-victoria-metrics.yaml
   - serviceaccount.yaml
   - statefulset.yaml
-namespace: monitoring
 images:
   - digest: sha256:54467c7764a3e6579199af1914bb779f01ce32265cd552eb5ae0d4f8a2b80a97
     name: docker.io/victoriametrics/victoria-metrics

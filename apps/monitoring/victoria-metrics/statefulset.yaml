@@ -7,6 +7,8 @@ metadata:
     app.kubernetes.io/instance: victoria-metrics-single
     app.kubernetes.io/component: server
 spec:
+  replicas: 1
+  revisionHistoryLimit: 0
   selector:
     matchLabels:
       app.kubernetes.io/name: victoria-metrics-single
@@ -20,17 +22,17 @@ spec:
         app.kubernetes.io/instance: victoria-metrics-single
         app.kubernetes.io/component: server
     spec:
+      serviceAccountName: victoria-metrics-single-server
       automountServiceAccountToken: true
+      terminationGracePeriodSeconds: 60
       securityContext:
+        runAsUser: 65534
+        runAsGroup: 65534
         fsGroup: 65534
         fsGroupChangePolicy: OnRootMismatch
-        runAsGroup: 65534
         runAsNonRoot: true
-        runAsUser: 65534
         seccompProfile:
           type: RuntimeDefault
-      serviceAccountName: victoria-metrics-single-server
-      terminationGracePeriodSeconds: 60
       containers:
         - name: vmsingle
           image: docker.io/victoriametrics/victoria-metrics
@@ -43,36 +45,29 @@ spec:
             - --retentionPeriod=1y
             - --storageDataPath=/storage
           ports:
-            - containerPort: 8428
-              name: http
+            - name: http
+              containerPort: 8428
+              protocol: TCP
+          volumeMounts:
+            - name: server-volume
+              mountPath: /storage
+            - name: scrapeconfig
+              mountPath: /scrapeconfig
           resources:
-            limits:
-              cpu: 500m
-              memory: 768Mi
             requests:
               cpu: 50m
               memory: 256Mi
-          volumeMounts:
-            - mountPath: /storage
-              name: server-volume
-            - mountPath: /scrapeconfig
-              name: scrapeconfig
-          livenessProbe:
-            failureThreshold: 3
-            periodSeconds: 30
-            tcpSocket:
-              port: http
-            timeoutSeconds: 5
-          readinessProbe:
-            failureThreshold: 3
-            httpGet:
-              path: /health
-              port: http
-              scheme: HTTP
-            periodSeconds: 10
-            timeoutSeconds: 3
+            limits:
+              cpu: 500m
+              memory: 768Mi
+          securityContext:
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
           startupProbe:
-            failureThreshold: 30
             httpGet:
               path: /health
               port: http
@@ -80,16 +75,25 @@ spec:
             initialDelaySeconds: 3
             periodSeconds: 5
             timeoutSeconds: 3
-          securityContext:
-            allowPrivilegeEscalation: false
-            capabilities:
-              drop:
-                - ALL
-            readOnlyRootFilesystem: false
+            failureThreshold: 30
+          livenessProbe:
+            tcpSocket:
+              port: http
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: http
+              scheme: HTTP
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
       volumes:
-        - configMap:
+        - name: scrapeconfig
+          configMap:
             name: victoria-metrics-single-server-scrapeconfig
-          name: scrapeconfig
   updateStrategy: {}
   volumeClaimTemplates:
     - apiVersion: v1

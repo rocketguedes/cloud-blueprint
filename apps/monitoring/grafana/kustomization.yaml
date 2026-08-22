@@ -1,5 +1,6 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
+namespace: monitoring
 resources:
   - configmap.yaml
   - deployment.yaml
@@ -8,7 +9,6 @@ resources:
   - secret.yaml
   - service.yaml
   - serviceaccount.yaml
-namespace: monitoring
 images:
   - digest: sha256:b035710db1d835beebcc7bd8d16d2d2735e9a97b341015b0951c8f7b0043fcec
     name: docker.io/grafana/grafana

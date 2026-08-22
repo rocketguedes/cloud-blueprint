@@ -7,6 +7,8 @@ metadata:
     app.kubernetes.io/instance: grafana
     app.kubernetes.io/component: grafana
 spec:
+  replicas: 1
+  revisionHistoryLimit: 0
   selector:
     matchLabels:
       app.kubernetes.io/name: grafana
@@ -19,75 +21,76 @@ spec:
         app.kubernetes.io/instance: grafana
         app.kubernetes.io/component: grafana
     spec:
+      serviceAccountName: grafana
       automountServiceAccountToken: false
-      containers:
-      - name: grafana
-        image: docker.io/grafana/grafana:13.2.0-slim@sha256:b035710db1d835beebcc7bd8d16d2d2735e9a97b341015b0951c8f7b0043fcec
-        envFrom:
-        - configMapRef:
-            name: grafana
-        - secretRef:
-            name: grafana
-        livenessProbe:
-          failureThreshold: 3
-          httpGet:
-            path: /api/health
-            port: 3000
-            scheme: HTTP
-          periodSeconds: 30
-          timeoutSeconds: 5
-        ports:
-        - containerPort: 3000
-          name: http-grafana
-          protocol: TCP
-        readinessProbe:
-          failureThreshold: 3
-          httpGet:
-            path: /api/health
-            port: 3000
-            scheme: HTTP
-          periodSeconds: 10
-          timeoutSeconds: 3
-        resources:
-          limits:
-            cpu: 500m
-            memory: 768Mi
-          requests:
-            cpu: 250m
-            memory: 256Mi
-        securityContext:
-          allowPrivilegeEscalation: false
-          capabilities:
-            drop:
-            - ALL
-          readOnlyRootFilesystem: true
-        startupProbe:
-          failureThreshold: 30
-          httpGet:
-            path: /api/health
-            port: 3000
-            scheme: HTTP
-          initialDelaySeconds: 10
-          periodSeconds: 5
-          timeoutSeconds: 3
-        volumeMounts:
-        - mountPath: /var/lib/grafana
-          name: grafana-pv
-        - mountPath: /tmp
-          name: tmp
       enableServiceLinks: false
       securityContext:
+        runAsUser: 472
+        runAsGroup: 472
         fsGroup: 472
         fsGroupChangePolicy: OnRootMismatch
-        runAsGroup: 472
         runAsNonRoot: true
-        runAsUser: 472
         seccompProfile:
           type: RuntimeDefault
-      serviceAccountName: grafana
+      containers:
+        - name: grafana
+          image: docker.io/grafana/grafana
+          envFrom:
+            - configMapRef:
+                name: grafana
+            - secretRef:
+                name: grafana
+          ports:
+            - name: http-grafana
+              containerPort: 3000
+              protocol: TCP
+          volumeMounts:
+            - name: grafana-pv
+              mountPath: /var/lib/grafana
+            - name: tmp
+              mountPath: /tmp
+          resources:
+            requests:
+              cpu: 250m
+              memory: 256Mi
+            limits:
+              cpu: 500m
+              memory: 768Mi
+          securityContext:
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
+          startupProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+              scheme: HTTP
+            initialDelaySeconds: 10
+            periodSeconds: 5
+            timeoutSeconds: 3
+            failureThreshold: 30
+          livenessProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+              scheme: HTTP
+            periodSeconds: 30
+            timeoutSeconds: 5
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /api/health
+              port: 3000
+              scheme: HTTP
+            periodSeconds: 10
+            timeoutSeconds: 3
+            failureThreshold: 3
       volumes:
-      - name: grafana-pv
-        persistentVolumeClaim:
-          claimName: grafana-pvc
-      - emptyDir: {}
-        name: tmp
+        - name: grafana-pv
+          persistentVolumeClaim:
+            claimName: grafana-pvc
+        - name: tmp
+          emptyDir: {}

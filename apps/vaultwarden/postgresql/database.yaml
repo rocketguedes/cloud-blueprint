@@ -7,8 +7,8 @@ metadata:
     app.kubernetes.io/instance: postgresql
     app.kubernetes.io/component: database
 spec:
-  databaseReclaimPolicy: retain
-  name: vaultwarden
-  owner: vaultwarden
   cluster:
     name: postgresql
+  name: vaultwarden
+  owner: vaultwarden
+  databaseReclaimPolicy: retain

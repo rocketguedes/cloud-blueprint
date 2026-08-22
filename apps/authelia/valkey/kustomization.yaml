@@ -1,12 +1,12 @@
 apiVersion: kustomize.config.k8s.io/v1beta1
 kind: Kustomization
+namespace: authelia
 resources:
   - deployment.yaml
   - namespace.yaml
   - persistentvolumeclaim.yaml
   - service.yaml
   - serviceaccount.yaml
-namespace: authelia
 images:
   - digest: sha256:ee91f7a174ac4d6a6b0685b3a60e321f0a9dbbb691f9b0e285be2ba1d1be8328
     name: docker.io/valkey/valkey

@@ -7,8 +7,8 @@ metadata:
     app.kubernetes.io/instance: postgresql
     app.kubernetes.io/component: database
 spec:
-  databaseReclaimPolicy: retain
-  name: authelia
-  owner: authelia
   cluster:
     name: postgresql
+  name: authelia
+  owner: authelia
+  databaseReclaimPolicy: retain

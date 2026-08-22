@@ -7,17 +7,17 @@ metadata:
     app.kubernetes.io/instance: vaultwarden
     app.kubernetes.io/component: vaultwarden
 spec:
-  hostnames:
-  - wallet.guedescloud.com.br
   parentRefs:
-  - name: cilium-gateway-system
-    namespace: kube-system
-    port: 443
+    - name: cilium-gateway-system
+      namespace: kube-system
+      port: 443
+  hostnames:
+    - wallet.guedescloud.com.br
   rules:
-  - backendRefs:
-    - name: vaultwarden
-      port: 8080
-    matches:
-    - path:
-        type: PathPrefix
-        value: /
+    - backendRefs:
+        - name: vaultwarden
+          port: 8080
+      matches:
+        - path:
+            type: PathPrefix
+            value: /

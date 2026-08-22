@@ -9,12 +9,12 @@ metadata:
 spec:
   ipFamilyPolicy: PreferDualStack
   selector:
-    app.kubernetes.io/component: vaultwarden
-    app.kubernetes.io/instance: vaultwarden
     app.kubernetes.io/name: vaultwarden
+    app.kubernetes.io/instance: vaultwarden
+    app.kubernetes.io/component: vaultwarden
   ports:
-  - name: vaultwarden
-    protocol: TCP
-    port: 8080
-    targetPort: http-alt
-    appProtocol: kubernetes.io/ws
+    - name: vaultwarden
+      appProtocol: kubernetes.io/ws
+      protocol: TCP
+      port: 8080
+      targetPort: http-alt

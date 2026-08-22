@@ -7,6 +7,8 @@ metadata:
     app.kubernetes.io/instance: lldap
     app.kubernetes.io/component: lldap
 spec:
+  replicas: 1
+  revisionHistoryLimit: 0
   selector:
     matchLabels:
       app.kubernetes.io/name: lldap
@@ -19,7 +21,17 @@ spec:
         app.kubernetes.io/instance: lldap
         app.kubernetes.io/component: lldap
     spec:
+      serviceAccountName: lldap
       automountServiceAccountToken: false
+      enableServiceLinks: false
+      securityContext:
+        runAsUser: 1001
+        runAsGroup: 1001
+        fsGroup: 1001
+        fsGroupChangePolicy: OnRootMismatch
+        runAsNonRoot: true
+        seccompProfile:
+          type: RuntimeDefault
       containers:
         - name: lldap
           image: docker.io/lldap/lldap
@@ -28,69 +40,63 @@ spec:
                 name: lldap
             - secretRef:
                 name: lldap
-          livenessProbe:
-            exec:
-              command:
-                - /app/lldap
-                - healthcheck
-            failureThreshold: 3
-            periodSeconds: 30
-            timeoutSeconds: 10
           ports:
-            - containerPort: 3890
-              name: ldap
-            - containerPort: 6360
-              name: ldaps
-            - containerPort: 17170
-              name: web
-          readinessProbe:
-            exec:
-              command:
-                - /app/lldap
-                - healthcheck
-            failureThreshold: 3
-            periodSeconds: 15
-            timeoutSeconds: 10
+            - name: ldap
+              containerPort: 3890
+              protocol: TCP
+            - name: ldaps
+              containerPort: 6360
+              protocol: TCP
+            - name: web
+              containerPort: 17170
+              protocol: TCP
+          volumeMounts:
+            - name: lldap-data
+              mountPath: /data
+            - name: tmp
+              mountPath: /tmp
           resources:
-            limits:
-              cpu: 100m
-              memory: 64Mi
             requests:
               cpu: 10m
               memory: 16Mi
+            limits:
+              cpu: 100m
+              memory: 64Mi
           securityContext:
+            runAsNonRoot: true
             allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
             capabilities:
               drop:
                 - ALL
-            readOnlyRootFilesystem: true
           startupProbe:
             exec:
               command:
                 - /app/lldap
                 - healthcheck
-            failureThreshold: 20
             initialDelaySeconds: 3
             periodSeconds: 5
             timeoutSeconds: 10
-          volumeMounts:
-            - mountPath: /data
-              name: lldap-data
-            - mountPath: /tmp
-              name: tmp
-      enableServiceLinks: false
-      securityContext:
-        fsGroup: 1001
-        fsGroupChangePolicy: OnRootMismatch
-        runAsGroup: 1001
-        runAsNonRoot: true
-        runAsUser: 1001
-        seccompProfile:
-          type: RuntimeDefault
-      serviceAccountName: lldap
+            failureThreshold: 20
+          livenessProbe:
+            exec:
+              command:
+                - /app/lldap
+                - healthcheck
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 3
+          readinessProbe:
+            exec:
+              command:
+                - /app/lldap
+                - healthcheck
+            periodSeconds: 15
+            timeoutSeconds: 10
+            failureThreshold: 3
       volumes:
         - name: lldap-data
           persistentVolumeClaim:
             claimName: lldap
-        - emptyDir: {}
-          name: tmp
+        - name: tmp
+          emptyDir: {}
