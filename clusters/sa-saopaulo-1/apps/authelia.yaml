@@ -12,6 +12,7 @@ spec:
   dependsOn:
     - name: authelia-postgresql
     - name: authelia-valkey
+    - name: cilium-gateway-system
     - name: lldap
   interval: 5m0s
   path: ./apps/authelia/authelia
