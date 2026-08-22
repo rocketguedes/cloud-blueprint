@@ -8,7 +8,7 @@ metadata:
     app.kubernetes.io/component: server
 data:
   DB_DATABASE_NAME: immich
-  DB_HOSTNAME: postgresql-rw.cnpg.svc.cluster.local
+  DB_HOSTNAME: postgresql-rw.postgresql.svc.cluster.local
   DB_PORT: "5432"
   DB_VECTOR_EXTENSION: vectorchord
   IMMICH_ALLOW_SETUP: "false"
