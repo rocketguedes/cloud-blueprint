@@ -45,6 +45,9 @@ spec:
               containerPort: 3000
               protocol: TCP
           volumeMounts:
+            - name: provisioning-alerting
+              mountPath: /etc/grafana/provisioning/alerting
+              readOnly: true
             - name: grafana-pv
               mountPath: /var/lib/grafana
             - name: tmp
@@ -89,6 +92,9 @@ spec:
             timeoutSeconds: 3
             failureThreshold: 3
       volumes:
+        - name: provisioning-alerting
+          configMap:
+            name: provisioning-alerting
         - name: grafana-pv
           persistentVolumeClaim:
             claimName: grafana-pvc

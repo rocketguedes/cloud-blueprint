@@ -1,0 +1,11 @@
+apiVersion: 1
+contactPoints:
+  - orgId: 1
+    name: cp_1
+    receivers:
+      - uid: efw1puf0hf9q8e
+        type: webhook
+        settings:
+          authorization_credentials: $__env{GF_NTFY_AUTH_TOKENS}
+          url: http://ntfy-svc.ntfy.svc.cluster.local:8093/grafana-alerts
+        disableResolveMessage: false

@@ -9,6 +9,10 @@ resources:
   - secret.yaml
   - service.yaml
   - serviceaccount.yaml
+configMapGenerator:
+  - name: provisioning-alerting
+    files:
+      - contact-points.yaml
 images:
   - name: docker.io/grafana/grafana
     newTag: 13.2.0-slim
