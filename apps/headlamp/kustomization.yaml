@@ -6,7 +6,6 @@ resources:
   - configmap.yaml
   - deployment.yaml
   - httproute.yaml
-  - namespace.yaml
   - secret.yaml
   - service.yaml
   - serviceaccount.yaml

@@ -6,7 +6,6 @@ resources:
   - configmap.yaml
   - deployment.yaml
   - httproute.yaml
-  - namespace.yaml
   - persistentvolume-apple.yaml
   - persistentvolume-backup.yaml
   - persistentvolumeclaim-apple.yaml

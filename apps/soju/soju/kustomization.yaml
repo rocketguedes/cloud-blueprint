@@ -4,7 +4,6 @@ namespace: soju
 resources:
   - deployment.yaml
   - httproute.yaml
-  - namespace.yaml
   - persistentvolumeclaim.yaml
   - secret.yaml
   - service.yaml

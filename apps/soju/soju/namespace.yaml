@@ -1,8 +1,0 @@
-apiVersion: v1
-kind: Namespace
-metadata:
-  name: soju
-  labels:
-    app.kubernetes.io/name: soju
-    app.kubernetes.io/instance: soju
-    pod-security.kubernetes.io/enforce: restricted

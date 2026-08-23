@@ -3,7 +3,6 @@ kind: Kustomization
 namespace: authelia
 resources:
   - deployment.yaml
-  - namespace.yaml
   - persistentvolumeclaim.yaml
   - service.yaml
   - serviceaccount.yaml

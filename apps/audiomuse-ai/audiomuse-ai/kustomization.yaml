@@ -4,7 +4,6 @@ namespace: audiomuse-ai
 resources:
   - configmap.yaml
   - httproute.yaml
-  - namespace.yaml
   - scaledobject.yaml
   - secret.yaml
   - service-audiomuse-ai-flask-headless.yaml
