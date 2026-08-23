@@ -12,7 +12,6 @@ spec:
   dependsOn:
     - name: authelia-postgresql
     - name: authelia-valkey
-    - name: cilium-gateway-system
     - name: lldap
     - name: namespaces
   interval: 5m0s

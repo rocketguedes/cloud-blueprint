@@ -10,7 +10,6 @@ spec:
     secretRef:
       name: sops-age
   dependsOn:
-    - name: cilium-gateway-system
     - name: namespaces
   interval: 5m0s
   path: ./apps/navidrome
