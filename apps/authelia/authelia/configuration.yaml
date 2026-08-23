@@ -15,9 +15,9 @@ identity_validation:
 definitions:
   user_attributes:
     immich_role:
-      expression: '"lldap_admin" in groups ? "admin" : "user"'
+      expression: '"admin" in groups ? "admin" : "user"'
     immich_quota:
-      expression: '"lldap_admin" in groups ? 50 : 15'
+      expression: '"admin" in groups ? 50 : 15'
 authentication_backend:
   refresh_interval: "5 minutes"
   ldap:
