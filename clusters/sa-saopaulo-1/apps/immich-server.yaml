@@ -12,7 +12,6 @@ spec:
   dependsOn:
     - name: authelia
     - name: cilium-gateway-system
-    - name: immich-machine-learning
     - name: immich-postgresql
     - name: immich-valkey
     - name: namespaces
