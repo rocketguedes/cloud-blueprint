@@ -366,7 +366,7 @@ unix_socket_permission: "0770"
 # https://headscale.net/stable/ref/oidc/
 oidc:
 #   # Block startup until the identity provider is available and healthy.
-  only_start_if_oidc_is_available: true
+  only_start_if_oidc_is_available: false
 #
 #   # OpenID Connect Issuer URL from the identity provider
   issuer: "https://accounts.guedescloud.com.br"

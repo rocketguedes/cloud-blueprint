@@ -10,7 +10,6 @@ spec:
     secretRef:
       name: sops-age
   dependsOn:
-    - name: authelia
     - name: cilium-gateway-system
     - name: namespaces
     - name: vaultwarden-postgresql
