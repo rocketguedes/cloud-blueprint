@@ -11,6 +11,31 @@ spec:
       name: sops-age
   dependsOn:
     - name: postgresql-cluster
+  healthCheckExprs:
+    - apiVersion: postgresql.cnpg.io/v1
+      kind: Database
+      current: >-
+        has(status.observedGeneration) &&
+        status.observedGeneration == metadata.generation &&
+        has(status.applied) &&
+        status.applied == true
+      failed: >-
+        has(status.observedGeneration) &&
+        status.observedGeneration == metadata.generation &&
+        has(status.applied) &&
+        status.applied == false
+    - apiVersion: postgresql.cnpg.io/v1
+      kind: DatabaseRole
+      current: >-
+        has(status.observedGeneration) &&
+        status.observedGeneration == metadata.generation &&
+        has(status.applied) &&
+        status.applied == true
+      failed: >-
+        has(status.observedGeneration) &&
+        status.observedGeneration == metadata.generation &&
+        has(status.applied) &&
+        status.applied == false
   interval: 5m0s
   path: ./apps/vaultwarden/postgresql
   prune: true
