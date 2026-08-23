@@ -12,5 +12,6 @@ resources:
   - navidrome.yaml
   - ntfy.yaml
   - ollama.yaml
+  - postgresql.yaml
   - soju.yaml
   - vaultwarden.yaml

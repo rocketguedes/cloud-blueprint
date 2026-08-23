@@ -3,7 +3,6 @@ kind: Kustomization
 namespace: postgresql
 resources:
   - cluster.yaml
-  - namespace.yaml
 images:
   - name: ghcr.io/cloudnative-pg/postgresql
     newTag: 18.4-standard-trixie
