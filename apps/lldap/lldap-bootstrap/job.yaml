@@ -6,6 +6,8 @@ metadata:
     app.kubernetes.io/name: lldap
     app.kubernetes.io/instance: lldap
     app.kubernetes.io/component: lldap
+  annotations:
+    kustomize.toolkit.fluxcd.io/force: enabled
 spec:
   ttlSecondsAfterFinished: 120
   template:
@@ -73,8 +75,8 @@ spec:
               - key: user-configs.json
                 path: user-configs.json
         - name: group-configs
-          secret:
-            secretName: lldap-bootstrap-configs
+          configMap:
+            name: lldap-bootstrap-configs
             items:
               - key: group-configs.json
                 path: group-configs.json

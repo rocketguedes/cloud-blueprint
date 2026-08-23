@@ -3,11 +3,18 @@ kind: Kustomization
 namespace: lldap
 resources:
   - job.yaml
-  - secret.yaml
 images:
   - name: docker.io/lldap/lldap
     newTag: v0.6.3-alpine-rootless
     digest: sha256:ba2c50930ea998eefd5454aa678a7977448019248b1827da87d330df0b71c284
+configMapGenerator:
+  - name: lldap-bootstrap-configs
+    files:
+      - group-configs.json
+secretGenerator:
+  - name: lldap-bootstrap-configs
+    files:
+      - user-configs.json
 labels:
   - pairs:
       app.kubernetes.io/part-of: lldap
