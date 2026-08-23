@@ -11,13 +11,16 @@ resources:
   - service.yaml
   - serviceaccount.yaml
 configMapGenerator:
-  - files:
+  - name: immich-config
+    files:
       - immich-config.json
-    name: immich-config
 images:
-  - digest: sha256:b434cb9287eea1471c9974845914d4dd328c9c2d652e446ed4930f99944f0ceb
-    name: ghcr.io/immich-app/immich-server
+  - name: docker.io/mikefarah/yq
+    newTag: 4.53.6
+    digest: sha256:cfc4eee658595834ef304eadb0c3ea721f3b7cb6404ad8b7cb909cc5b5145b23
+  - name: ghcr.io/immich-app/immich-server
     newTag: v3.1.0
+    digest: sha256:b434cb9287eea1471c9974845914d4dd328c9c2d652e446ed4930f99944f0ceb
 labels:
   - pairs:
       app.kubernetes.io/part-of: immich

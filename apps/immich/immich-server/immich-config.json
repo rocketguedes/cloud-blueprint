@@ -225,7 +225,7 @@
     "autoRegister": true,
     "buttonText": "Login with Authelia",
     "clientId": "immich",
-    "clientSecret": "RElSDpbxEZTVib.an6iBtSvzy194Wfzs.~A0ssOn6Vhbw07cJBwFBtqVc2j6U~aaBAUkEdx8",
+    "clientSecret": "",
     "defaultStorageQuota": null,
     "enabled": true,
     "endSessionEndpoint": "https://accounts.guedescloud.com.br/logout?rd=https://photos.guedescloud.com.br/",

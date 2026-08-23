@@ -32,6 +32,28 @@ spec:
         runAsNonRoot: true
         seccompProfile:
           type: RuntimeDefault
+      initContainers:
+        - name: build-config
+          image: docker.io/mikefarah/yq
+          command: ["sh", "-c"]
+          args:
+            - yq -o=json '.oauth.clientSecret = env(IMMICH_CONFIG_OAUTH_CLIENT_SECRET)' /template/immich-config.json > /config/immich-config.json
+          envFrom:
+            - secretRef:
+                name: immich
+          volumeMounts:
+            - name: immich-config
+              mountPath: /template
+              readOnly: true
+            - name: config
+              mountPath: /config
+          securityContext:
+            runAsNonRoot: true
+            allowPrivilegeEscalation: false
+            readOnlyRootFilesystem: true
+            capabilities:
+              drop:
+                - ALL
       containers:
         - name: server
           image: ghcr.io/immich-app/immich-server
@@ -47,8 +69,9 @@ spec:
           volumeMounts:
             - name: data
               mountPath: /data
-            - name: immich-config
+            - name: config
               mountPath: /config
+              readOnly: true
           resources:
             requests:
               cpu: 30m
@@ -92,3 +115,5 @@ spec:
         - name: immich-config
           configMap:
             name: immich-config
+        - name: config
+          emptyDir: {}
