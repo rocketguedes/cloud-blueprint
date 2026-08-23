@@ -10,9 +10,17 @@ resources:
   - service.yaml
   - serviceaccount.yaml
 configMapGenerator:
+  - name: dashboards
+    files:
+      - dashboards/10229_rev57.json
+      - dashboards/14205_rev1.json
+      - dashboards/ntfy-grafana.json
   - name: provisioning-alerting
     files:
       - contact-points.yaml
+  - name: provisioning-dashboards
+    files:
+      - dashboards.yaml
   - name: provisioning-datasources
     files:
       - datasources.yaml
