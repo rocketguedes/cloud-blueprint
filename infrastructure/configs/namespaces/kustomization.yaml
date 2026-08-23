@@ -13,3 +13,4 @@ resources:
   - ntfy.yaml
   - ollama.yaml
   - soju.yaml
+  - vaultwarden.yaml
