@@ -10,9 +10,9 @@ resources:
   - service.yaml
   - serviceaccount.yaml
 images:
-  - digest: sha256:b035710db1d835beebcc7bd8d16d2d2735e9a97b341015b0951c8f7b0043fcec
-    name: docker.io/grafana/grafana
+  - name: docker.io/grafana/grafana
     newTag: 13.2.0-slim
+    digest: sha256:b035710db1d835beebcc7bd8d16d2d2735e9a97b341015b0951c8f7b0043fcec
 labels:
   - pairs:
       app.kubernetes.io/part-of: monitoring

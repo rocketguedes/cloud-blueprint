@@ -15,9 +15,9 @@ resources:
   - statefulset-audiomuse-ai-worker.yaml
   - triggerauthentication.yaml
 images:
-  - digest: sha256:c89d17a3584a37a4da0cc0427fffc20a80680e78046d1ae6b0a27fa8af98fb90
-    name: ghcr.io/neptunehub/audiomuse-ai
+  - name: ghcr.io/neptunehub/audiomuse-ai
     newTag: 3.3.1
+    digest: sha256:c89d17a3584a37a4da0cc0427fffc20a80680e78046d1ae6b0a27fa8af98fb90
 labels:
   - pairs:
       app.kubernetes.io/part-of: audiomuse-ai

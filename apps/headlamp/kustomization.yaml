@@ -11,9 +11,9 @@ resources:
   - service.yaml
   - serviceaccount.yaml
 images:
-  - digest: sha256:b491653c1a0d380b70b67a4024f1204591f9c84a68ee567778d53d28b1856168
-    name: ghcr.io/headlamp-k8s/headlamp
+  - name: ghcr.io/headlamp-k8s/headlamp
     newTag: v0.44.0
+    digest: sha256:b491653c1a0d380b70b67a4024f1204591f9c84a68ee567778d53d28b1856168
 labels:
   - pairs:
       app.kubernetes.io/part-of: headlamp

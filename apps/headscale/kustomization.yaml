@@ -11,13 +11,13 @@ resources:
   - serviceaccount.yaml
   - tlsroute.yaml
 configMapGenerator:
-  - files:
+  - name: headscale-config
+    files:
       - config.yaml
-    name: headscale-config
 images:
-  - digest: sha256:0e7f1c6e4ce6c2a2a001103ecd3fa645a045adf30ac8a5234fe037b43000cd72
-    name: docker.io/headscale/headscale
+  - name: docker.io/headscale/headscale
     newTag: v0.29.3
+    digest: sha256:0e7f1c6e4ce6c2a2a001103ecd3fa645a045adf30ac8a5234fe037b43000cd72
 labels:
   - pairs:
       app.kubernetes.io/part-of: headscale

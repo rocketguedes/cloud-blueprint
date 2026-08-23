@@ -9,9 +9,9 @@ resources:
   - service.yaml
   - serviceaccount.yaml
 images:
-  - digest: sha256:5c0b3a1f307f8d9508c9fd5dcef04349b6cda1740ae95d478498dc86e3e432bf
-    name: ghcr.io/jeffvli/feishin
+  - name: ghcr.io/jeffvli/feishin
     newTag: 1.15.1
+    digest: sha256:5c0b3a1f307f8d9508c9fd5dcef04349b6cda1740ae95d478498dc86e3e432bf
 labels:
   - pairs:
       app.kubernetes.io/part-of: feishin
