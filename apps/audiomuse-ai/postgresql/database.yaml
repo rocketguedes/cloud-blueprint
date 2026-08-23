@@ -11,4 +11,4 @@ spec:
     name: postgresql
   name: audiomusedb
   owner: audiomuse
-  databaseReclaimPolicy: delete
+  databaseReclaimPolicy: retain

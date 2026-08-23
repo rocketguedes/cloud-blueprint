@@ -13,4 +13,4 @@ spec:
   login: true
   passwordSecret:
     name: ntfy
-  databaseRoleReclaimPolicy: delete
+  databaseRoleReclaimPolicy: retain

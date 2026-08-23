@@ -11,4 +11,4 @@ spec:
     name: postgresql
   name: ntfy
   owner: ntfy
-  databaseReclaimPolicy: delete
+  databaseReclaimPolicy: retain

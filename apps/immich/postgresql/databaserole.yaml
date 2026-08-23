@@ -13,4 +13,4 @@ spec:
   login: true
   passwordSecret:
     name: immich-database
-  databaseRoleReclaimPolicy: delete
+  databaseRoleReclaimPolicy: retain

@@ -20,4 +20,4 @@ spec:
       ensure: present
     - name: cube
       ensure: present
-  databaseReclaimPolicy: delete
+  databaseReclaimPolicy: retain

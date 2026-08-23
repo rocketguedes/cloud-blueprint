@@ -11,4 +11,4 @@ spec:
     name: postgresql
   name: soju
   owner: soju
-  databaseReclaimPolicy: delete
+  databaseReclaimPolicy: retain

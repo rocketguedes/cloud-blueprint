@@ -13,4 +13,4 @@ spec:
   login: true
   passwordSecret:
     name: audiomuse-ai
-  databaseRoleReclaimPolicy: delete
+  databaseRoleReclaimPolicy: retain
