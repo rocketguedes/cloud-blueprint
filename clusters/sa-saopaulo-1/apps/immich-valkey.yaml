@@ -11,6 +11,7 @@ spec:
       name: sops-age
   dependsOn:
     - name: cilium
+    - name: namespaces
   interval: 5m0s
   path: ./apps/immich/valkey
   prune: true

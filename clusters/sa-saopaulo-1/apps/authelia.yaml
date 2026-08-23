@@ -14,6 +14,7 @@ spec:
     - name: authelia-valkey
     - name: cilium-gateway-system
     - name: lldap
+    - name: namespaces
   interval: 5m0s
   path: ./apps/authelia/authelia
   prune: true

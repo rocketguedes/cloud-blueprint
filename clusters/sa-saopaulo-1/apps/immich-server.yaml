@@ -15,6 +15,7 @@ spec:
     - name: immich-machine-learning
     - name: immich-postgresql
     - name: immich-valkey
+    - name: namespaces
   interval: 5m0s
   path: ./apps/immich/immich-server
   prune: true

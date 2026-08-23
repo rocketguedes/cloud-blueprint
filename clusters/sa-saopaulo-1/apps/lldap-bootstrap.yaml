@@ -12,6 +12,7 @@ spec:
   dependsOn:
     - name: cilium
     - name: lldap
+    - name: namespaces
   interval: 5m0s
   path: ./apps/lldap/lldap-bootstrap
   prune: true

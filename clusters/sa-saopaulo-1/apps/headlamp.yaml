@@ -12,6 +12,7 @@ spec:
   dependsOn:
     - name: authelia
     - name: cilium-gateway-system
+    - name: namespaces
   interval: 5m0s
   path: ./apps/headlamp
   prune: true

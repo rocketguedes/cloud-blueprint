@@ -10,6 +10,7 @@ spec:
     secretRef:
       name: sops-age
   dependsOn:
+    - name: namespaces
     - name: postgresql-cluster
   healthCheckExprs:
     - apiVersion: postgresql.cnpg.io/v1
