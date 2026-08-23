@@ -13,6 +13,9 @@ configMapGenerator:
   - name: provisioning-alerting
     files:
       - contact-points.yaml
+  - name: provisioning-datasources
+    files:
+      - datasources.yaml
 images:
   - name: docker.io/grafana/grafana
     newTag: 13.2.0-slim
