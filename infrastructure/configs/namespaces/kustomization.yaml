@@ -1,0 +1,15 @@
+apiVersion: kustomize.config.k8s.io/v1beta1
+kind: Kustomization
+resources:
+  - audiomuse-ai.yaml
+  - authelia.yaml
+  - feishin.yaml
+  - headlamp.yaml
+  - headscale.yaml
+  - immich.yaml
+  - lldap.yaml
+  - monitoring.yaml
+  - navidrome.yaml
+  - ntfy.yaml
+  - ollama.yaml
+  - soju.yaml
