@@ -1,0 +1,16 @@
+apiVersion: postgresql.cnpg.io/v1
+kind: DatabaseRole
+metadata:
+  name: soju
+  labels:
+    app.kubernetes.io/name: postgresql
+    app.kubernetes.io/instance: postgresql
+    app.kubernetes.io/component: database
+spec:
+  cluster:
+    name: postgresql
+  name: soju
+  login: true
+  passwordSecret:
+    name: soju
+  databaseRoleReclaimPolicy: delete
