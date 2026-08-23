@@ -14,7 +14,6 @@ spec:
     - name: cilium-gateway-system
     - name: grafana-postgresql
     - name: namespaces
-    - name: victoria-metrics
   interval: 5m0s
   path: ./apps/monitoring/grafana
   prune: true
