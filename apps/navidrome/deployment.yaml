@@ -53,7 +53,7 @@ spec:
                 version_file="${target}.version"
                 tmp="${target}.tmp.ndp"
 
-                [ -f "$target" ] && [ "$(cat "$version_file" 2>/dev/null)" = "$version" ] && return 0
+                [ -f "$target" ] && [ -f "$version_file" ] && [ "$(cat "$version_file")" = "$version" ] && return 0
 
                 trap 'rm -f "$tmp"' EXIT
                 wget -qO "$tmp" "$url"
@@ -64,11 +64,22 @@ spec:
                 trap - EXIT
               }
 
+              enable_plugin() {
+                name=$1
+                if [ -f /data/navidrome.db ]; then
+                  enabled=$(sqlite3 /data/navidrome.db "SELECT enabled FROM plugin WHERE id='${name}';" || true)
+                  [ "$enabled" = "1" ] && return 0
+                fi
+                navidrome plugin enable "$name"
+              }
+
               fetch_plugin "apple-music" "$PLUGINS_APPLE_MUSIC_VERSION" "$PLUGINS_APPLE_MUSIC_SHA256" \
                 "https://github.com/navidrome/apple-music-plugin/releases/download/${PLUGINS_APPLE_MUSIC_VERSION}/apple-music.ndp"
 
               fetch_plugin "audiomuseai" "$PLUGINS_AUDIOMUSEAI_VERSION" "$PLUGINS_AUDIOMUSEAI_SHA256" \
                 "https://github.com/NeptuneHub/AudioMuse-AI-NV-plugin/releases/download/${PLUGINS_AUDIOMUSEAI_VERSION}/audiomuseai.ndp"
+
+              enable_plugin "apple-music"
           env:
             - name: PLUGINS_APPLE_MUSIC_VERSION
               value: v0.2.0
