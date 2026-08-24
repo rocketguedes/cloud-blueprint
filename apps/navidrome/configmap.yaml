@@ -14,6 +14,7 @@ data:
   ND_BASEURL: https://music.guedescloud.com.br
   ND_COVERARTPRIORITY: cover.*, folder.*, front.*, embedded
   ND_COVERARTQUALITY: "100"
+  ND_ENABLENATURALSORTING: "true"
   ND_ENABLEWEBPENCODING: "true"
   ND_ENFORCENONROOTUSER: "true"
   ND_IMAGECACHESIZE: 6GB
