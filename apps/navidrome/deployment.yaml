@@ -112,14 +112,14 @@ spec:
             - name: apple
               mountPath: /music
               readOnly: true
-            - name: navidrome
-              mountPath: /data
+            - name: backup
+              mountPath: /backup
             - name: config
               mountPath: /data/navidrome.toml
               subPath: navidrome.toml
               readOnly: true
-            - name: backup
-              mountPath: /backup
+            - name: navidrome
+              mountPath: /data
             - name: tmp
               mountPath: /tmp
           resources:
@@ -163,16 +163,16 @@ spec:
           hostPath:
             path: /home/ubuntu/library/Apple Music
             type: Directory
-        - name: navidrome
+        - name: backup
           hostPath:
-            path: /home/ubuntu/data/navidrome
+            path: /home/ubuntu/backups/navidrome
             type: DirectoryOrCreate
         - name: config
           configMap:
             name: navidrome
-        - name: backup
+        - name: navidrome
           hostPath:
-            path: /home/ubuntu/backups/navidrome
+            path: /home/ubuntu/data/navidrome
             type: DirectoryOrCreate
         - name: tmp
           emptyDir: {}
