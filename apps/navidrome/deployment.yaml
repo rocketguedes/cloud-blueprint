@@ -12,8 +12,6 @@ spec:
     matchLabels:
       app.kubernetes.io/name: navidrome
       app.kubernetes.io/instance: navidrome
-  strategy:
-    type: Recreate
   template:
     metadata:
       labels:
@@ -28,7 +26,7 @@ spec:
       automountServiceAccountToken: false
       enableServiceLinks: false
       nodeSelector:
-        kubernetes.io/hostname: instance-20260203-1255
+        disk: local
       securityContext:
         runAsUser: 1001
         runAsGroup: 1001
@@ -83,6 +81,7 @@ spec:
           volumeMounts:
             - name: navidrome
               mountPath: /data
+              subPath: data
           resources:
             requests:
               cpu: 10m
@@ -109,17 +108,20 @@ spec:
               containerPort: 4533
               protocol: TCP
           volumeMounts:
-            - name: apple
+            - name: navidrome
+              mountPath: /data
+              subPath: data
+            - name: navidrome
               mountPath: /music
+              subPath: library/apple-music
               readOnly: true
-            - name: backup
+            - name: navidrome
               mountPath: /backup
+              subPath: backup
             - name: config
               mountPath: /data/navidrome.toml
               subPath: navidrome.toml
               readOnly: true
-            - name: navidrome
-              mountPath: /data
             - name: tmp
               mountPath: /tmp
           resources:
@@ -159,20 +161,13 @@ spec:
             timeoutSeconds: 3
             failureThreshold: 3
       volumes:
-        - name: apple
-          hostPath:
-            path: /home/ubuntu/library/Apple Music
-            type: Directory
-        - name: backup
-          hostPath:
-            path: /home/ubuntu/backups/navidrome
-            type: DirectoryOrCreate
         - name: config
           configMap:
             name: navidrome
         - name: navidrome
-          hostPath:
-            path: /home/ubuntu/data/navidrome
-            type: DirectoryOrCreate
+          persistentVolumeClaim:
+            claimName: navidrome
         - name: tmp
           emptyDir: {}
+  strategy:
+    type: Recreate

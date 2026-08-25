@@ -4,6 +4,8 @@ namespace: navidrome
 resources:
   - deployment.yaml
   - httproute.yaml
+  - persistentvolume.yaml
+  - persistentvolumeclaim.yaml
   - secret.yaml
   - service.yaml
   - serviceaccount.yaml
