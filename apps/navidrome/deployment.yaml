@@ -160,16 +160,19 @@ spec:
             failureThreshold: 3
       volumes:
         - name: apple
-          persistentVolumeClaim:
-            claimName: apple
+          hostPath:
+            path: /home/ubuntu/library/Apple Music
+            type: Directory
         - name: navidrome
-          persistentVolumeClaim:
-            claimName: navidrome
+          hostPath:
+            path: /home/ubuntu/data/navidrome
+            type: DirectoryOrCreate
         - name: config
           configMap:
             name: navidrome
         - name: backup
-          persistentVolumeClaim:
-            claimName: backup
+          hostPath:
+            path: /home/ubuntu/backups/navidrome
+            type: DirectoryOrCreate
         - name: tmp
           emptyDir: {}

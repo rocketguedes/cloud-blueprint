@@ -4,11 +4,6 @@ namespace: navidrome
 resources:
   - deployment.yaml
   - httproute.yaml
-  - persistentvolume-apple.yaml
-  - persistentvolume-backup.yaml
-  - persistentvolumeclaim-apple.yaml
-  - persistentvolumeclaim-backup.yaml
-  - persistentvolumeclaim.yaml
   - secret.yaml
   - service.yaml
   - serviceaccount.yaml
