@@ -98,6 +98,7 @@ spec:
       containers:
         - name: navidrome
           image: docker.io/deluan/navidrome
+          imagePullPolicy: Always
           envFrom:
             - configMapRef:
                 name: navidrome
