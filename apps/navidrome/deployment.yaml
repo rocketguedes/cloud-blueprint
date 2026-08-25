@@ -27,6 +27,8 @@ spec:
       serviceAccountName: navidrome
       automountServiceAccountToken: false
       enableServiceLinks: false
+      nodeSelector:
+        kubernetes.io/hostname: instance-20260203-1255
       securityContext:
         runAsUser: 1001
         runAsGroup: 1001
