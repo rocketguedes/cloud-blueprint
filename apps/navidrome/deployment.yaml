@@ -100,8 +100,6 @@ spec:
           image: docker.io/deluan/navidrome
           imagePullPolicy: Always
           envFrom:
-            - configMapRef:
-                name: navidrome
             - secretRef:
                 name: navidrome
           ports:
@@ -114,7 +112,7 @@ spec:
               readOnly: true
             - name: navidrome
               mountPath: /data
-            - name: navidrome-toml
+            - name: config
               mountPath: /data/navidrome.toml
               subPath: navidrome.toml
               readOnly: true
@@ -165,9 +163,9 @@ spec:
         - name: navidrome
           persistentVolumeClaim:
             claimName: navidrome
-        - name: navidrome-toml
+        - name: config
           configMap:
-            name: navidrome-toml
+            name: navidrome
         - name: backup
           persistentVolumeClaim:
             claimName: backup

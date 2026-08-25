@@ -1,0 +1,50 @@
+# Navidrome Configuration
+# Generated on 2026-08-25T12:19:05.418Z
+
+Address = "[::]"
+Agents = "audiomuseai,apple-music,deezer,lastfm,listenbrainz"
+BaseURL = "https://music.guedescloud.com.br"
+CoverArtPriority = "cover.*, folder.*, front.*, embedded"
+CoverArtQuality = 100
+EnableNaturalSorting = true
+EnableWebPEncoding = true
+EnforceNonRootUser = true
+ImageCacheSize = "6GB"
+MaxImageSize = "100MB"
+TranscodingCacheSize = "6GB"
+
+[Backup]
+Count = 7
+Path = "/backup"
+Schedule = "0 0 * * *"
+
+[Jellyfin]
+Enabled = true
+
+[LastFM]
+ScrobbleFirstArtistOnly = true
+
+[PID]
+Album = "plid|albumartistid,album,albumversion,releasedate"
+Track = "cnid|albumid,discnumber,tracknumber,title"
+
+[Plugins]
+AutoReload = true
+
+[Prometheus]
+Enabled = true
+
+[Scanner]
+ArtistJoiner = ", "
+
+[Subsonic]
+ArtistParticipations = true
+
+[Tags]
+"Composer.Split" = [ ]
+"cnid.Aliases" = [ "cnid" ]
+"plid.Album" = true
+"plid.Aliases" = [ "plid" ]
+
+[Transcoding]
+EnableCancellation = true
