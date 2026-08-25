@@ -11,9 +11,9 @@ resources:
   - serviceaccount.yaml
 images:
   - name: docker.io/vaultwarden/server
-    newTag: 1.37.1-alpine
-    digest: sha256:b094afed4ed5ea353821c6efcedca446f30c6654ba2bc441db6089b0c2b94ac8
+    newTag: 1.37.2-alpine
+    digest: sha256:d16a304c2476fd787634ddde2c00be8fdfa1a72539438c626ece3686b5b88ab4
 labels:
   - pairs:
       app.kubernetes.io/part-of: vaultwarden
-      app.kubernetes.io/version: 1.37.1-alpine
+      app.kubernetes.io/version: 1.37.2-alpine
