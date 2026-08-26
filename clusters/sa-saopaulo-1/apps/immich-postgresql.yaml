@@ -16,11 +16,13 @@ spec:
     - apiVersion: postgresql.cnpg.io/v1
       kind: Database
       current: >-
+        has(status) &&
         has(status.observedGeneration) &&
         status.observedGeneration == metadata.generation &&
         has(status.applied) &&
         status.applied == true
       failed: >-
+        has(status) &&
         has(status.observedGeneration) &&
         status.observedGeneration == metadata.generation &&
         has(status.applied) &&
@@ -28,11 +30,13 @@ spec:
     - apiVersion: postgresql.cnpg.io/v1
       kind: DatabaseRole
       current: >-
+        has(status) &&
         has(status.observedGeneration) &&
         status.observedGeneration == metadata.generation &&
         has(status.applied) &&
         status.applied == true
       failed: >-
+        has(status) &&
         has(status.observedGeneration) &&
         status.observedGeneration == metadata.generation &&
         has(status.applied) &&
