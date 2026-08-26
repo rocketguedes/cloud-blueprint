@@ -1,0 +1,237 @@
+# yaml-language-server: $schema=https://taskfile.dev/schema.json
+
+version: '3'
+
+vars:
+  SSH_TARGET: '{{.SSH_USER | default "ubuntu"}}@{{.SSH_HOST | default "instance-20260203-1255"}}'
+  K3S_VERSION: '{{.K3S_VERSION | default "v1.36.3+k3s1"}}'
+  CILIUM_VERSION: '{{.CILIUM_VERSION | default "1.20.1"}}'
+  API_PORT: '{{.API_PORT | default "6443"}}'
+
+dotenv:
+  - .env
+
+tasks:
+  default:
+    desc: List all available tasks
+    cmds:
+      - '{{.TASK_EXE}} --list'
+    silent: true
+
+  bootstrap:
+    desc: Run full cluster bootstrap (k3s, cilium, flux)
+    cmds:
+      - task: k3s:prereq
+      - task: k3s:server-config
+      - task: k3s:install
+      - task: k3s:start
+      - task: k3s:user-kubeconfig
+      - task: k3s:local-kubeconfig
+      - task: k3s:gateway-api
+      - task: k3s:cilium
+      - task: flux:secret
+      - task: flux:bootstrap
+
+  k3s:server-config:
+    desc: Generate and deploy /etc/rancher/k3s/config.yaml to remote host
+    requires:
+      vars:
+        - K3S_ADVERTISE_ADDRESS
+        - K3S_NODE_IPS
+        - K3S_NODE_EXTERNAL_IPS
+        - SSH_HOST
+        - API_ENDPOINT
+    preconditions:
+      - sh: 'command -v ssh'
+        msg: 'ssh is required (pacman -S openssh)'
+    cmds:
+      - bash scripts/k3s-server-config.sh | ssh {{.SSH_TARGET}} "sudo mkdir -p /etc/rancher/k3s && sudo tee /etc/rancher/k3s/config.yaml > /dev/null"
+
+  k3s:prereq:
+    desc: Configure host prerequisites (enable IPv4/IPv6 forwarding)
+    requires:
+      vars:
+        - SSH_HOST
+    preconditions:
+      - sh: 'command -v ssh'
+        msg: 'ssh is required (pacman -S openssh)'
+    status:
+      - ssh {{.SSH_TARGET}} "sysctl -n net.ipv4.ip_forward | grep -q '^1$'"
+      - ssh {{.SSH_TARGET}} "sysctl -n net.ipv6.conf.all.forwarding | grep -q '^1$'"
+    cmds:
+      - cat scripts/k3s-prereq.sh | ssh {{.SSH_TARGET}} "sudo bash"
+
+  k3s:install:
+    desc: Download and install K3s on remote host (INSTALL_K3S_SKIP_START=true)
+    requires:
+      vars:
+        - SSH_HOST
+    preconditions:
+      - sh: 'command -v ssh'
+        msg: 'ssh is required (pacman -S openssh)'
+      - sh: 'ssh {{.SSH_TARGET}} "command -v curl >/dev/null 2>&1"'
+        msg: 'curl is required on the remote host'
+    status:
+      - ssh {{.SSH_TARGET}} "command -v k3s >/dev/null 2>&1"
+    cmds:
+      - ssh {{.SSH_TARGET}} "curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION={{.K3S_VERSION}} INSTALL_K3S_SKIP_START=true sh -"
+
+  k3s:start:
+    desc: Enable and start K3s service on remote host
+    requires:
+      vars:
+        - SSH_HOST
+    preconditions:
+      - sh: 'command -v ssh'
+        msg: 'ssh is required (pacman -S openssh)'
+    status:
+      - ssh {{.SSH_TARGET}} "systemctl is-active --quiet k3s"
+    cmds:
+      - ssh {{.SSH_TARGET}} "sudo systemctl enable --now k3s"
+
+  k3s:user-kubeconfig:
+    desc: Install kubeconfig for remote user on server
+    requires:
+      vars:
+        - SSH_HOST
+    preconditions:
+      - sh: 'command -v ssh'
+        msg: 'ssh is required (pacman -S openssh)'
+    cmds:
+      - cat scripts/k3s-user-kubeconfig.sh | ssh {{.SSH_TARGET}} "sudo bash"
+
+  k3s:local-kubeconfig:
+    desc: Fetch kubeconfig from remote host and update API server endpoint
+    requires:
+      vars:
+        - SSH_HOST
+        - API_ENDPOINT
+    preconditions:
+      - sh: 'command -v ssh'
+        msg: 'ssh is required (pacman -S openssh)'
+      - sh: 'command -v kubectl'
+        msg: 'kubectl is required (pacman -S kubectl)'
+    status:
+      - kubectl config view --minify -o jsonpath='{.clusters[0].cluster.server}' 2>/dev/null | grep -qF "{{.API_ENDPOINT}}:{{.API_PORT}}"
+    cmds:
+      - mkdir -p ~/.kube
+      - ssh {{.SSH_TARGET}} "sudo cat /etc/rancher/k3s/k3s.yaml" > ~/.kube/config
+      - chmod 600 ~/.kube/config
+      - kubectl config set-cluster default --server="https://{{.API_ENDPOINT}}:{{.API_PORT}}"
+      - kubectl cluster-info
+
+  k3s:gateway-api:
+    desc: Apply Gateway API CRDs
+    preconditions:
+      - sh: 'command -v kubectl'
+        msg: 'kubectl is required (pacman -S kubectl)'
+      - sh: 'test -d infrastructure/controllers/gateway-api'
+        msg: 'infrastructure/controllers/gateway-api directory not found'
+    cmds:
+      - kubectl apply -k infrastructure/controllers/gateway-api --server-side
+
+  k3s:cilium:
+    desc: Install Cilium CNI with dual-stack and Gateway API support
+    requires:
+      vars:
+        - K3S_ADVERTISE_ADDRESS
+    preconditions:
+      - sh: 'command -v helm'
+        msg: 'helm is required (pacman -S helm)'
+      - sh: 'command -v cilium-cli'
+        msg: 'cilium-cli is required (pacman -S cilium-cli)'
+    cmds:
+      - |
+        helm upgrade --install cilium oci://quay.io/cilium/charts/cilium \
+          --version {{.CILIUM_VERSION}} \
+          --namespace kube-system \
+          --set envoy.securityContext.capabilities.keepCapNetBindService=true \
+          --set bpf.masquerade=true \
+          --set gatewayAPI.enabled=true \
+          --set gatewayAPI.hostNetwork.enabled=true \
+          --set hubble.relay.enabled=true \
+          --set hubble.ui.enabled=true \
+          --set ipam.mode=kubernetes \
+          --set ipv6.enabled=true \
+          --set ipv6NativeRoutingCIDR="fd42::/56" \
+          --set kubeProxyReplacement=true \
+          --set k8sServiceHost="{{.K3S_ADVERTISE_ADDRESS}}" \
+          --set k8sServicePort=6443 \
+          --set operator.replicas=1
+      - cilium-cli status --wait
+
+  k3s:upgrade:
+    desc: Upgrade K3s to a new version on remote host
+    requires:
+      vars:
+        - SSH_HOST
+    preconditions:
+      - sh: 'command -v ssh'
+        msg: 'ssh is required (pacman -S openssh)'
+      - sh: 'ssh {{.SSH_TARGET}} "command -v curl >/dev/null 2>&1"'
+        msg: 'curl is required on the remote host'
+      - sh: 'ssh {{.SSH_TARGET}} "command -v k3s >/dev/null 2>&1"'
+        msg: 'k3s is not installed on the remote host. Use k3s:install instead.'
+    cmds:
+      - ssh {{.SSH_TARGET}} "curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION={{.K3S_VERSION}} INSTALL_K3S_SKIP_START=true sh -"
+      - ssh {{.SSH_TARGET}} "sudo systemctl restart k3s"
+
+  k3s:reset:
+    desc: Undo cluster setup — remove Cilium interfaces, uninstall K3s, and clean up kubeconfig
+    prompt: Are you sure you want to reset K3s on {{.SSH_TARGET}}? This is destructive.
+    requires:
+      vars:
+        - SSH_HOST
+    preconditions:
+      - sh: 'command -v ssh'
+        msg: 'ssh is required (pacman -S openssh)'
+    cmds:
+      - cat scripts/k3s-reset.sh | ssh {{.SSH_TARGET}} "sudo bash"
+      - rm -f ~/.kube/config
+
+  flux:secret:
+    desc: Create sops-age secret in flux-system namespace
+    requires:
+      vars:
+        - SOPS_AGE_KEY_FILE
+    preconditions:
+      - sh: 'command -v kubectl'
+        msg: 'kubectl is required (pacman -S kubectl)'
+      - sh: 'test -f {{.SOPS_AGE_KEY_FILE}}'
+        msg: 'SOPS age key file not found at {{.SOPS_AGE_KEY_FILE}}'
+    cmds:
+      - kubectl create namespace flux-system --dry-run=client -o yaml | kubectl apply --server-side -f -
+      - |
+        kubectl create secret generic sops-age \
+          --namespace=flux-system \
+          --from-file=age.agekey={{.SOPS_AGE_KEY_FILE}} \
+          --dry-run=client -o yaml | kubectl apply --server-side -f -
+
+  flux:bootstrap:
+    desc: Bootstrap Flux CD with GitHub repository
+    requires:
+      vars:
+        - GITHUB_TOKEN
+        - GITHUB_REPO
+        - GITHUB_OWNER
+        - GITHUB_BRANCH
+        - GIT_AUTHOR_NAME
+        - GIT_AUTHOR_EMAIL
+        - CLUSTER_PATH
+    preconditions:
+      - sh: 'command -v flux'
+        msg: 'flux CLI is required (pacman -S fluxcd)'
+    env:
+      GITHUB_TOKEN: '{{.GITHUB_TOKEN}}'
+    cmds:
+      - |
+        flux bootstrap github \
+          --token-auth \
+          --owner="{{.GITHUB_OWNER}}" \
+          --repository="{{.GITHUB_REPO}}" \
+          --branch="{{.GITHUB_BRANCH}}" \
+          --path="{{.CLUSTER_PATH}}" \
+          --author-email="{{.GIT_AUTHOR_EMAIL}}" \
+          --author-name="{{.GIT_AUTHOR_NAME}}" \
+          --personal=true \
+          --private=false
