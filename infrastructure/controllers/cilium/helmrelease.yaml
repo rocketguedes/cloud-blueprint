@@ -19,6 +19,7 @@ spec:
       retryInterval: 5m0s
   values:
     bpf:
+      lbExternalClusterIP: true
       masquerade: true
     envoy:
       securityContext:
