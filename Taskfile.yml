@@ -243,3 +243,25 @@ tasks:
         --author-name="{{.GIT_AUTHOR_NAME}}"
         --personal=true
         --private=false
+
+  image:update:
+    desc: Update an app's image tag and digest to the latest
+    silent: true
+    preconditions:
+      - sh: 'command -v crane'
+        msg: 'crane is required (pacman -S crane)'
+      - sh: 'command -v yq'
+        msg: 'yq is required (pacman -S go-yq)'
+    cmds:
+      - bash scripts/container-image-update.sh {{.CLI_ARGS}}
+
+  image:update-all:
+    desc: Update all apps to their latest image tags and digests
+    silent: true
+    preconditions:
+      - sh: 'command -v crane'
+        msg: 'crane is required (pacman -S crane)'
+      - sh: 'command -v yq'
+        msg: 'yq is required (pacman -S go-yq)'
+    cmds:
+      - find apps -name "kustomization.yaml" | FORCE_COLOR=1 xargs -P 8 -n 1 bash scripts/container-image-update.sh
