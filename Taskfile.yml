@@ -178,6 +178,8 @@ tasks:
         msg: 'curl is required on the remote host'
       - sh: 'ssh {{.SSH_TARGET}} "command -v k3s >/dev/null 2>&1"'
         msg: 'k3s is not installed on the remote host. Use k3s:install instead.'
+    status:
+      - ssh {{.SSH_TARGET}} "k3s --version | grep -qF '{{.K3S_VERSION}}'"
     cmds:
       - ssh {{.SSH_TARGET}} "curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION={{.K3S_VERSION}} INSTALL_K3S_SKIP_START=true sh -"
       - ssh {{.SSH_TARGET}} "sudo systemctl restart k3s"
