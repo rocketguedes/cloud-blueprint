@@ -141,23 +141,22 @@ tasks:
       - sh: 'command -v cilium-cli'
         msg: 'cilium-cli is required (pacman -S cilium-cli)'
     cmds:
-      - |
-        helm upgrade --install cilium oci://quay.io/cilium/charts/cilium \
-          --version {{.CILIUM_VERSION}} \
-          --namespace kube-system \
-          --set envoy.securityContext.capabilities.keepCapNetBindService=true \
-          --set bpf.masquerade=true \
-          --set gatewayAPI.enabled=true \
-          --set gatewayAPI.hostNetwork.enabled=true \
-          --set hubble.relay.enabled=true \
-          --set hubble.ui.enabled=true \
-          --set ipam.mode=kubernetes \
-          --set ipv6.enabled=true \
-          --set ipv6NativeRoutingCIDR="fd42::/56" \
-          --set kubeProxyReplacement=true \
-          --set k8sServiceHost="{{.K3S_ADVERTISE_ADDRESS}}" \
-          --set k8sServicePort=6443 \
-          --set operator.replicas=1
+      - helm upgrade --install cilium oci://quay.io/cilium/charts/cilium
+        --version {{.CILIUM_VERSION}}
+        --namespace kube-system
+        --set envoy.securityContext.capabilities.keepCapNetBindService=true
+        --set bpf.masquerade=true
+        --set gatewayAPI.enabled=true
+        --set gatewayAPI.hostNetwork.enabled=true
+        --set hubble.relay.enabled=true
+        --set hubble.ui.enabled=true
+        --set ipam.mode=kubernetes
+        --set ipv6.enabled=true
+        --set ipv6NativeRoutingCIDR="fd42::/56"
+        --set kubeProxyReplacement=true
+        --set k8sServiceHost="{{.K3S_ADVERTISE_ADDRESS}}"
+        --set k8sServicePort=6443
+        --set operator.replicas=1
       - cilium-cli status --wait
 
   k3s:upgrade:
@@ -201,11 +200,10 @@ tasks:
         msg: 'SOPS age key file not found at {{.SOPS_AGE_KEY_FILE}}'
     cmds:
       - kubectl create namespace flux-system --dry-run=client -o yaml | kubectl apply --server-side -f -
-      - |
-        kubectl create secret generic sops-age \
-          --namespace=flux-system \
-          --from-file=age.agekey={{.SOPS_AGE_KEY_FILE}} \
-          --dry-run=client -o yaml | kubectl apply --server-side -f -
+      - kubectl create secret generic sops-age
+        --namespace=flux-system
+        --from-file=age.agekey={{.SOPS_AGE_KEY_FILE}}
+        --dry-run=client -o yaml | kubectl apply --server-side -f -
 
   flux:bootstrap:
     desc: Bootstrap Flux CD with GitHub repository
@@ -224,14 +222,13 @@ tasks:
     env:
       GITHUB_TOKEN: '{{.GITHUB_TOKEN}}'
     cmds:
-      - |
-        flux bootstrap github \
-          --token-auth \
-          --owner="{{.GITHUB_OWNER}}" \
-          --repository="{{.GITHUB_REPO}}" \
-          --branch="{{.GITHUB_BRANCH}}" \
-          --path="{{.CLUSTER_PATH}}" \
-          --author-email="{{.GIT_AUTHOR_EMAIL}}" \
-          --author-name="{{.GIT_AUTHOR_NAME}}" \
-          --personal=true \
-          --private=false
+      - flux bootstrap github
+        --token-auth
+        --owner="{{.GITHUB_OWNER}}"
+        --repository="{{.GITHUB_REPO}}"
+        --branch="{{.GITHUB_BRANCH}}"
+        --path="{{.CLUSTER_PATH}}"
+        --author-email="{{.GIT_AUTHOR_EMAIL}}"
+        --author-name="{{.GIT_AUTHOR_NAME}}"
+        --personal=true
+        --private=false
