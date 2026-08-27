@@ -33,6 +33,7 @@ tasks:
       - task: flux:bootstrap
 
   k3s:server-config:
+    internal: true
     desc: Generate and deploy /etc/rancher/k3s/config.yaml to remote host
     requires:
       vars:
@@ -48,6 +49,7 @@ tasks:
       - bash scripts/k3s-server-config.sh | ssh {{.SSH_TARGET}} "sudo mkdir -p /etc/rancher/k3s && sudo tee /etc/rancher/k3s/config.yaml > /dev/null"
 
   k3s:prereq:
+    internal: true
     desc: Configure host prerequisites (enable IPv4/IPv6 forwarding)
     requires:
       vars:
@@ -62,6 +64,7 @@ tasks:
       - cat scripts/k3s-prereq.sh | ssh {{.SSH_TARGET}} "sudo bash"
 
   k3s:install:
+    internal: true
     desc: Download and install K3s on remote host (INSTALL_K3S_SKIP_START=true)
     requires:
       vars:
@@ -77,6 +80,7 @@ tasks:
       - ssh {{.SSH_TARGET}} "curl -sfL https://get.k3s.io | INSTALL_K3S_VERSION={{.K3S_VERSION}} INSTALL_K3S_SKIP_START=true sh -"
 
   k3s:start:
+    internal: true
     desc: Enable and start K3s service on remote host
     requires:
       vars:
@@ -90,6 +94,7 @@ tasks:
       - ssh {{.SSH_TARGET}} "sudo systemctl enable --now k3s"
 
   k3s:user-kubeconfig:
+    internal: true
     desc: Install kubeconfig for remote user on server
     requires:
       vars:
@@ -121,6 +126,7 @@ tasks:
       - kubectl cluster-info
 
   k3s:gateway-api:
+    internal: true
     desc: Apply Gateway API CRDs
     preconditions:
       - sh: 'command -v kubectl'
@@ -131,6 +137,7 @@ tasks:
       - kubectl apply -k infrastructure/controllers/gateway-api --server-side
 
   k3s:cilium:
+    internal: true
     desc: Install Cilium CNI with dual-stack and Gateway API support
     requires:
       vars:
@@ -189,6 +196,7 @@ tasks:
       - rm -f ~/.kube/config
 
   flux:secret:
+    internal: true
     desc: Create sops-age secret in flux-system namespace
     requires:
       vars:
@@ -206,6 +214,7 @@ tasks:
         --dry-run=client -o yaml | kubectl apply --server-side -f -
 
   flux:bootstrap:
+    internal: true
     desc: Bootstrap Flux CD with GitHub repository
     requires:
       vars:
