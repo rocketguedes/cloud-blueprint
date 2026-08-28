@@ -13,10 +13,10 @@ data:
   IVF_DISK_CACHE_DIR: /tmp/ivf_cache
   LYRICS_ASR_ENABLE: "false"
   MEDIASERVER_TYPE: navidrome
-  NAVIDROME_URL: http://navidrome.navidrome:4533
+  NAVIDROME_URL: http://navidrome.navidrome.svc.cluster.local:4533
   NAVIDROME_USER: leandro
   OLLAMA_MODEL_NAME: qwen3:1.7b
-  OLLAMA_SERVER_URL: http://ollama.ollama:11434/api/generate
+  OLLAMA_SERVER_URL: http://ollama.ollama.svc.cluster.local:11434/api/generate
   POSTGRES_DB: audiomusedb
   POSTGRES_HOST: postgresql-rw.postgresql.svc.cluster.local
   POSTGRES_PORT: "5432"
