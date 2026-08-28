@@ -58,6 +58,13 @@ spec:
             capabilities:
               drop:
                 - ALL
+          lifecycle:
+            postStart:
+              exec:
+                command:
+                  - /bin/sh
+                  - -c
+                  - ollama run "$OLLAMA_MODEL" ""
           startupProbe:
             httpGet:
               path: /

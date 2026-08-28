@@ -11,6 +11,7 @@ data:
   OLLAMA_HOST: "[::]:11434"
   OLLAMA_KEEP_ALIVE: "-1"
   OLLAMA_MAX_LOADED_MODELS: "1"
+  OLLAMA_MODEL: qwen3:1.7b
   OLLAMA_NUM_THREADS: "3"
   OLLAMA_ORIGINS: https://*.guedescloud.com.br,https://guedescloud.com.br
   TZ: America/Bahia
