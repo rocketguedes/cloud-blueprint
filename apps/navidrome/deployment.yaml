@@ -45,31 +45,54 @@ spec:
             - -c
             - |
               set -eu
+
               mkdir -p /data/plugins
 
               fetch_plugin() {
-                name=$1 version=$2 checksum=$3 url=$4
-                target="/data/plugins/${name}.ndp"
-                version_file="${target}.version"
-                tmp="${target}.tmp.ndp"
+                local name=$1
+                local version=$2
+                local checksum=$3
+                local url=$4
 
-                [ -f "$target" ] && [ "$(cat "$version_file" 2>/dev/null)" = "$version" ] && return 0
+                local target="/data/plugins/${name}.ndp"
+                local version_file="${target}.version"
+                local tmp="${target}.tmp.ndp"
+
+                if [ -f "$target" ] && [ "$(cat "$version_file" 2>/dev/null)" = "$version" ]; then
+                  return 0
+                fi
 
                 trap 'rm -f "$tmp"' EXIT
+
                 wget -qO "$tmp" "$url"
                 echo "${checksum}  ${tmp}" | sha256sum -c -s
-                navidrome plugin validate "$tmp"
+                navidrome --nobanner plugin validate "$tmp"
                 mv "$tmp" "$target"
-                echo "$version" > "$version_file"
+                echo "$version" >"$version_file"
+
                 trap - EXIT
               }
 
-              fetch_plugin "apple-music" "$PLUGINS_APPLE_MUSIC_VERSION" "$PLUGINS_APPLE_MUSIC_SHA256" \
-                "https://github.com/navidrome/apple-music-plugin/releases/download/${PLUGINS_APPLE_MUSIC_VERSION}/apple-music.ndp"
+              fetch_plugin "apple-music" "$PLUGINS_APPLE_MUSIC_VERSION" "$PLUGINS_APPLE_MUSIC_SHA256" "https://github.com/navidrome/apple-music-plugin/releases/download/${PLUGINS_APPLE_MUSIC_VERSION}/apple-music.ndp"
 
-              fetch_plugin "audiomuseai" "$PLUGINS_AUDIOMUSEAI_VERSION" "$PLUGINS_AUDIOMUSEAI_SHA256" \
-                "https://github.com/NeptuneHub/AudioMuse-AI-NV-plugin/releases/download/${PLUGINS_AUDIOMUSEAI_VERSION}/audiomuseai.ndp"
+              fetch_plugin "audiomuseai" "$PLUGINS_AUDIOMUSEAI_VERSION" "$PLUGINS_AUDIOMUSEAI_SHA256" "https://github.com/NeptuneHub/AudioMuse-AI-NV-plugin/releases/download/${PLUGINS_AUDIOMUSEAI_VERSION}/audiomuseai.ndp"
+
+              if [ ! -f /data/navidrome.db ]; then
+                navidrome --nobanner artwork status
+              fi
+
+              navidrome --nobanner plugin rescan
+              navidrome --nobanner plugin enable apple-music
+              navidrome --nobanner plugin edit audiomuseai --config="{\"apiToken\": \"$AUDIOMUSE_API_TOKEN\", \"apiUrl\": \"$AUDIOMUSE_API_URL\"}"
+              navidrome --nobanner plugin enable audiomuseai
+          envFrom:
+            - secretRef:
+                name: navidrome
           env:
+            - name: AUDIOMUSE_API_URL
+              value: http://audiomuse-ai-flask-service.audiomuse-ai.svc.cluster.local:8000
+            - name: ND_LOGLEVEL
+              value: warn
             - name: PLUGINS_APPLE_MUSIC_VERSION
               value: v0.2.0
             - name: PLUGINS_APPLE_MUSIC_SHA256
@@ -82,6 +105,12 @@ spec:
             - name: navidrome
               mountPath: /data
               subPath: data
+            - name: config
+              mountPath: /data/navidrome.toml
+              subPath: navidrome.toml
+              readOnly: true
+            - name: tmp
+              mountPath: /tmp
           resources:
             requests:
               cpu: 10m
