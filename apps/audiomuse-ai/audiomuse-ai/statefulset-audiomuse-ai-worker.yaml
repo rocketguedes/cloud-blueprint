@@ -44,15 +44,11 @@ spec:
           env:
             - name: SERVICE_TYPE
               value: worker
-            - name: CLAP_OTHER_FEATURES_CACHE_DIR
-              value: /app/model
           volumeMounts:
             - name: app-temp-audio
               mountPath: /app/temp_audio
             - name: plugins-storage
               mountPath: /app/plugin/installed
-            - name: model-cache
-              mountPath: /app/model
             - name: tmp
               mountPath: /tmp
           resources:
@@ -70,8 +66,6 @@ spec:
                 - ALL
       volumes:
         - name: app-temp-audio
-          emptyDir: {}
-        - name: model-cache
           emptyDir: {}
         - name: tmp
           emptyDir: {}
