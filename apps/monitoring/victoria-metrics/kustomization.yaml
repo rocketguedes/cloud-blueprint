@@ -11,9 +11,9 @@ resources:
   - statefulset.yaml
 images:
   - name: docker.io/victoriametrics/victoria-metrics
-    newTag: v1.150.0
-    digest: sha256:54467c7764a3e6579199af1914bb779f01ce32265cd552eb5ae0d4f8a2b80a97
+    newTag: v1.151.0
+    digest: sha256:6d164540a04f49ba4e696cbdb70f9fee78be1e94b8f2a1292743a0b1ab8275bd
 labels:
   - pairs:
       app.kubernetes.io/part-of: monitoring
-      app.kubernetes.io/version: v1.150.0
+      app.kubernetes.io/version: v1.151.0
