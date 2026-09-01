@@ -7,9 +7,9 @@ resources:
   - serviceaccount.yaml
 images:
   - name: docker.io/valkey/valkey
-    newTag: 9.1.1-alpine3.24
-    digest: sha256:ee91f7a174ac4d6a6b0685b3a60e321f0a9dbbb691f9b0e285be2ba1d1be8328
+    newTag: 9.1.2-alpine3.24
+    digest: sha256:a174b894902bd3367e330d47cc2054367dc4917701776aaf336f41d83b65ec7a
 labels:
   - pairs:
       app.kubernetes.io/part-of: immich
-      app.kubernetes.io/version: 9.1.1-alpine3.24
+      app.kubernetes.io/version: 9.1.2-alpine3.24
