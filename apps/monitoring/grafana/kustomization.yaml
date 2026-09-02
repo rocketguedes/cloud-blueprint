@@ -26,9 +26,9 @@ configMapGenerator:
       - datasources.yaml
 images:
   - name: docker.io/grafana/grafana
-    newTag: 13.2.0-slim
-    digest: sha256:b035710db1d835beebcc7bd8d16d2d2735e9a97b341015b0951c8f7b0043fcec
+    newTag: 13.2.1-slim
+    digest: sha256:2b2ca79d6fcd9b0f5d16dc8c839b46c93d2a85e72f4cef35ae4c4be0ebe65dfc
 labels:
   - pairs:
       app.kubernetes.io/part-of: monitoring
-      app.kubernetes.io/version: 13.2.0-slim
+      app.kubernetes.io/version: 13.2.1-slim
