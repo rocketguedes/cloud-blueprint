@@ -4,6 +4,7 @@ resources:
   - audiomuse-ai.yaml
   - authelia.yaml
   - feishin.yaml
+  - garage.yaml
   - headlamp.yaml
   - headscale.yaml
   - immich.yaml
