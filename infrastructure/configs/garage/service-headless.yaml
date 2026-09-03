@@ -14,12 +14,12 @@ spec:
     - name: s3-api
       protocol: TCP
       port: 3900
-      targetPort: 3900
+      targetPort: s3-api
     - name: rpc
       protocol: TCP
       port: 3901
-      targetPort: 3901
+      targetPort: rpc
     - name: s3-web
       protocol: TCP
       port: 3902
-      targetPort: 3902
+      targetPort: s3-web
