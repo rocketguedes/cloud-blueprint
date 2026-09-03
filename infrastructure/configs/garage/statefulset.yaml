@@ -7,6 +7,7 @@ metadata:
     app.kubernetes.io/instance: garage
 spec:
   replicas: 1
+  revisionHistoryLimit: 0
   selector:
     matchLabels:
       app.kubernetes.io/name: garage
