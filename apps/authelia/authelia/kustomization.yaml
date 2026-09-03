@@ -13,9 +13,9 @@ configMapGenerator:
       - configuration.yaml
 images:
   - name: ghcr.io/authelia/authelia
-    newTag: 4.39.21
-    digest: sha256:b2a221b30da111d6717bdf81bdf0b180915921447dde4c533a796c9a33a75d72
+    newTag: 4.39.22
+    digest: sha256:936134132eaf01bfa2faf85055afbc1e0cc1cc5ca4547e9c06408fd0dd784646
 labels:
   - pairs:
       app.kubernetes.io/part-of: authelia
-      app.kubernetes.io/version: 4.39.21
+      app.kubernetes.io/version: 4.39.22
