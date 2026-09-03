@@ -12,7 +12,7 @@ spec:
   dependsOn:
     - name: namespaces
   interval: 5m0s
-  path: ./apps/garage
+  path: ./infrastructure/configs/garage
   prune: true
   sourceRef:
     kind: GitRepository
