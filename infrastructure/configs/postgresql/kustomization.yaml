@@ -10,6 +10,5 @@ images:
 labels:
   - pairs:
       app.kubernetes.io/version: 18.4-standard-trixie
-    includeSelectors: false
 configurations:
   - images.yaml
