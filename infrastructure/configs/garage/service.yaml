@@ -6,6 +6,7 @@ metadata:
     app.kubernetes.io/name: garage
     app.kubernetes.io/instance: garage
 spec:
+  ipFamilyPolicy: PreferDualStack
   selector:
     app.kubernetes.io/name: garage
     app.kubernetes.io/instance: garage
