@@ -256,7 +256,7 @@ tasks:
       - bash scripts/container-image-update.sh {{.CLI_ARGS}}
 
   image:update-all:
-    desc: Update all apps to their latest image tags and digests
+    desc: Update all apps and infrastructure to their latest image tags and digests
     silent: true
     preconditions:
       - sh: 'command -v crane'
@@ -264,4 +264,4 @@ tasks:
       - sh: 'command -v yq'
         msg: 'yq is required (pacman -S go-yq)'
     cmds:
-      - find apps -name "kustomization.yaml" | FORCE_COLOR=1 xargs -P 8 -n 1 bash scripts/container-image-update.sh
+      - find apps infrastructure -name "kustomization.yaml" | FORCE_COLOR=1 xargs -P 8 -n 1 bash scripts/container-image-update.sh

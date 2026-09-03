@@ -22,13 +22,14 @@ if [[ -z "${1:-}" ]]; then
   printf '%s\n' \
     "Update a Kustomization's container image to the latest tag and digest." \
     "" \
-    "Usage: container-image-update <app>" \
+    "Usage: container-image-update <target>" \
     "" \
     "Arguments:" \
-    "  <app>  Path to an app directory or its kustomization.yaml" \
+    "  <target>  Path to an app/infrastructure directory or its kustomization.yaml" \
     "" \
     "Examples:" \
     "  container-image-update apps/headlamp" \
+    "  container-image-update infrastructure/configs/postgresql" \
     "  container-image-update apps/headlamp/kustomization.yaml" >&2
   exit 1
 fi
@@ -62,13 +63,14 @@ for ((i = 0; i < IMAGE_COUNT; i++)); do
     continue
   fi
 
-  if [[ "$CURRENT_TAG" =~ ^(v?)([0-9]+(\.[0-9]+)+)(-[a-zA-Z0-9_.-]+)?$ ]]; then
-    V_PREFIX="${BASH_REMATCH[1]}"
-    TAG_SUFFIX="${BASH_REMATCH[4]}"
+  if [[ "$CURRENT_TAG" =~ ^(([a-zA-Z0-9_.-]+-)?[vV]?)([0-9]+(\.[0-9]+)+)(-[a-zA-Z0-9_.-]+)?$ ]]; then
+    TAG_PREFIX="${BASH_REMATCH[1]}"
+    TAG_SUFFIX="${BASH_REMATCH[5]}"
 
+    ESCAPED_PREFIX="${TAG_PREFIX//./\\.}"
     ESCAPED_SUFFIX="${TAG_SUFFIX//./\\.}"
 
-    REGEX="^${V_PREFIX:+v}[0-9]+(\.[0-9]+)+${ESCAPED_SUFFIX}\$"
+    REGEX="^${ESCAPED_PREFIX}[0-9]+(\.[0-9]+)+${ESCAPED_SUFFIX}\$"
 
     LATEST_TAG=$(crane ls "$IMAGE" | grep -E "$REGEX" | sort -V | tail -n 1 || true)
 
