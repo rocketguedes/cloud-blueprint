@@ -38,7 +38,6 @@ spec:
       initContainers:
         - name: navidrome-plugins-init
           image: docker.io/deluan/navidrome
-          imagePullPolicy: Always
           command:
             - /bin/sh
           args:
@@ -128,7 +127,6 @@ spec:
       containers:
         - name: navidrome
           image: docker.io/deluan/navidrome
-          imagePullPolicy: Always
           envFrom:
             - secretRef:
                 name: navidrome
