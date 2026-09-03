@@ -15,8 +15,8 @@ configMapGenerator:
       - navidrome.toml
 images:
   - name: docker.io/deluan/navidrome
-    newTag: develop
+    newTag: 0.64.0
 labels:
   - pairs:
       app.kubernetes.io/part-of: navidrome
-      app.kubernetes.io/version: develop
+      app.kubernetes.io/version: 0.64.0
