@@ -20,6 +20,7 @@ spec:
         app.kubernetes.io/instance: garage
     spec:
       serviceAccountName: garage
+      enableServiceLinks: false
       securityContext:
         runAsUser: 1000
         runAsGroup: 1000
