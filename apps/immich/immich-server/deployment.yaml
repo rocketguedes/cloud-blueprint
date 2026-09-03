@@ -58,7 +58,6 @@ spec:
               cpu: 1200m
               memory: 2Gi
           securityContext:
-            runAsNonRoot: true
             allowPrivilegeEscalation: false
             readOnlyRootFilesystem: true
             capabilities:
