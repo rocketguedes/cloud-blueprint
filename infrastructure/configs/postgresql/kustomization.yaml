@@ -5,13 +5,13 @@ resources:
   - cluster.yaml
 images:
   - name: ghcr.io/cloudnative-pg/postgresql
-    newTag: 18.4-standard-trixie
-    digest: sha256:f0cc49632b5cc1e51f65ba03658c89bd31d64ea2672b14843a808a8d281417e1
+    newTag: 18.6-standard-trixie
+    digest: sha256:c2a773217853c6e0ffe7da9c37ea456466efb20cf844f27511a73fa6a81e3152
   - name: ghcr.io/tensorchord/vchord-scratch
     newTag: pg18-v1.1.1
     digest: sha256:bdea43bed2a414e21bbf71767bf6f0739747ac480b267b51772dc214ac28dcb3
 labels:
   - pairs:
-      app.kubernetes.io/version: 18.4-standard-trixie
+      app.kubernetes.io/version: 18.6-standard-trixie
 configurations:
   - images.yaml
