@@ -12,7 +12,7 @@ data:
 
     db_engine = "lmdb"
 
-    block_size = "1048576"
+    block_size = "1MiB"
 
     replication_factor = 1
     consistency_mode = "consistent"
